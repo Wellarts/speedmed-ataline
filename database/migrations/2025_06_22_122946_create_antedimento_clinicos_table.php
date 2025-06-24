@@ -1,0 +1,79 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('antedimento_clinicos', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('paciente_id')
+                ->constrained('pacientes')
+                ->onDelete('cascade')
+                ->nullable();
+            $table->timestamp('data_hora_atendimento');
+            $table->foreignId('medico_id')
+                ->constrained('medicos')
+                ->onDelete('cascade')
+                ->nullable();
+            $table->integer('tipo_atendimento', 5)
+                ->nullable();
+            $table->string('qp', 255);
+            $table->longText('hdp');
+            $table->foreignId('doenca_id')
+                ->constrained('doencas')
+                ->onDelete('cascade');
+            $table->year('data_inicio_sintomas');
+            $table->logText('cirurgias_hospitalizacoes');
+            $table->foreignId('medicamento_alergias_id')
+                ->constrained('medicamento_alergias')
+                ->onDelete('cascade')
+                ->nullable();
+            $table->string('alimento_alergias', 100);
+            $table->string('outros_alergias', 100);
+            $table->foreignId('medicamento_uso_id')
+                ->constrained('medicamento_uso')
+                ->onDelete('cascade');
+            $table->string('medicamento_uso_detalhes', 255);
+            $table->foreignId('doenca_familiar_id')
+                ->constrained('doenca_familiar')
+                ->onDelete('cascade');
+            $table->integer('doenca_familiar_parentesco', 5);
+            $table->integer('tabagismo', 1);
+            $table->integer('alcoolismo', 1);
+            $table->integer('drogas', 1);
+            $table->integer('atividade_fisica', 1);
+            $table->string('dieta', 1);
+            $table->string('obs_estilo_vida', 255);
+            
+
+            
+                
+
+
+                
+
+            
+
+
+
+
+
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('antedimento_clinicos');
+    }
+};
