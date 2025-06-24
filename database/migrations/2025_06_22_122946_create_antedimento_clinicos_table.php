@@ -51,6 +51,39 @@ return new class extends Migration
             $table->integer('atividade_fisica', 1);
             $table->string('dieta', 1);
             $table->string('obs_estilo_vida', 255);
+            $table->date('dum');
+            $table->string('pa',10);
+            $table->string('peso', 10);
+            $table->string('altura', 10);
+            $table->string('imc', 10);
+            $table->string('fc', 10);
+            $table->string('fr', 10);
+            $table->string('temperatura', 10);
+            $table->string('saturacao', 10);
+            $table->string('glicemia', 10);
+            $table->string('obs_exame_fisico', 255);
+            $table->string('exame_fisico', 255);
+            $table->foreignId('hipotese_diagnostica_id')
+                    ->constant('hipotese_diagnostica')
+                    ->onDelete('cascade');
+            $table->string('hipotese_diagnostica_detalhes', 255);
+            $table->json('prescricao_medicamentosa');
+            $table->json('exames_solicitados');                   
+            $table->foreignId('encaminhamentos')
+                    ->constant('encaminhamentos')
+                    ->onDelete('cascade');         
+            $table->longText('orientacoes');
+            $table->longText('evolucao');
+            $table->string('status',2);
+            $table->longText('observacoes', 255);
+            $table->string('anexos_resultados', 255);
+            
+
+
+
+                    
+
+
             
 
             
