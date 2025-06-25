@@ -13,42 +13,26 @@ return new class extends Migration
     {
         Schema::create('antedimento_clinicos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('paciente_id')
-                ->constrained('pacientes')
-                ->onDelete('cascade')
-                ->nullable();
+            $table->foreignId('paciente_id');
             $table->timestamp('data_hora_atendimento');
-            $table->foreignId('medico_id')
-                ->constrained('medicos')
-                ->onDelete('cascade')
-                ->nullable();
-            $table->integer('tipo_atendimento', 5)
-                ->nullable();
+            $table->foreignId('medico_id');
+            $table->integer('tipo_atendimento');
             $table->string('qp', 255);
             $table->longText('hdp');
-            $table->foreignId('doenca_id')
-                ->constrained('doencas')
-                ->onDelete('cascade');
+            $table->foreignId('doenca_id');
             $table->year('data_inicio_sintomas');
-            $table->logText('cirurgias_hospitalizacoes');
-            $table->foreignId('medicamento_alergias_id')
-                ->constrained('medicamento_alergias')
-                ->onDelete('cascade')
-                ->nullable();
+            $table->longText('cirurgias_hospitalizacoes');
+            $table->foreignId('medicamento_alergias_id');
             $table->string('alimento_alergias', 100);
             $table->string('outros_alergias', 100);
-            $table->foreignId('medicamento_uso_id')
-                ->constrained('medicamento_uso')
-                ->onDelete('cascade');
+            $table->foreignId('medicamento_uso_id');
             $table->string('medicamento_uso_detalhes', 255);
-            $table->foreignId('doenca_familiar_id')
-                ->constrained('doenca_familiar')
-                ->onDelete('cascade');
-            $table->integer('doenca_familiar_parentesco', 5);
-            $table->integer('tabagismo', 1);
-            $table->integer('alcoolismo', 1);
-            $table->integer('drogas', 1);
-            $table->integer('atividade_fisica', 1);
+            $table->foreignId('doenca_familiar_id');
+            $table->integer('doenca_familiar_parentesco');
+            $table->boolean('tabagismo');
+            $table->boolean('alcoolismo');
+            $table->boolean('drogas');
+            $table->boolean('atividade_fisica');
             $table->string('dieta', 1);
             $table->string('obs_estilo_vida', 255);
             $table->date('dum');
@@ -63,41 +47,16 @@ return new class extends Migration
             $table->string('glicemia', 10);
             $table->string('obs_exame_fisico', 255);
             $table->string('exame_fisico', 255);
-            $table->foreignId('hipotese_diagnostica_id')
-                    ->constant('hipotese_diagnostica')
-                    ->onDelete('cascade');
+            $table->foreignId('hipotese_diagnostica_id');
             $table->string('hipotese_diagnostica_detalhes', 255);
             $table->json('prescricao_medicamentosa');
             $table->json('exames_solicitados');                   
-            $table->foreignId('encaminhamentos')
-                    ->constant('encaminhamentos')
-                    ->onDelete('cascade');         
+            $table->foreignId('encaminhamentos');         
             $table->longText('orientacoes');
             $table->longText('evolucao');
             $table->string('status',2);
-            $table->longText('observacoes', 255);
+            $table->longText('observacoes');
             $table->string('anexos_resultados', 255);
-            
-
-
-
-                    
-
-
-            
-
-            
-                
-
-
-                
-
-            
-
-
-
-
-
             $table->timestamps();
         });
     }
