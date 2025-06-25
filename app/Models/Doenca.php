@@ -14,6 +14,7 @@ class Doenca extends Model
     protected $fillable = [
         'nome',
         'cid',
+        'grave'
     ];
 
     protected $casts = [

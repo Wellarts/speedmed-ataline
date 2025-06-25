@@ -18,7 +18,7 @@ class AtendimentoClinico extends Model
         'tipo_atendimento',
         'qp',
         'hdp',
-        'doenca_id',
+        'doenca_preexistente',
         'data_inicio_sintomas',
         'cirurgias_hospitalizacoes',
         'medicamento_alergias_id',
@@ -63,6 +63,7 @@ class AtendimentoClinico extends Model
         'prescricao_medicamentosa' => 'json',
         'exames_solicitados' => 'json',
         'anexos_resultados' => 'json',
+        'doenca_preexistente' => 'array',
         
     ];  
     
@@ -73,12 +74,12 @@ class AtendimentoClinico extends Model
 
     public function medico()
     {
-        return $this->belongsTo(User::class, 'medico_id');
+        return $this->belongsTo(User::class);
     }
 
     public function doenca()
     {
-        return $this->belongsTo(Doenca::class, 'doenca_id');
+        return $this->belongsToMany(Doenca::class);
     }
 
     public function medicamentoAlergias()

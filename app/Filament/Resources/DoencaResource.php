@@ -41,6 +41,8 @@ class DoencaResource extends Resource
                     ->required()
                     ->maxLength(10)
                     ->unique(ignoreRecord: true),
+                    Forms\Components\Toggle::make('grave')
+                    ->label('Grave'),
             ]);
     }
 
@@ -56,6 +58,9 @@ class DoencaResource extends Resource
                     ->label('CID')
                     ->searchable()
                     ->sortable(),
+                    Tables\Columns\IconColumn::make('grave')
+                    ->label('Grave')
+                    ->boolean(),
                 
             ])
             ->filters([

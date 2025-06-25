@@ -24,64 +24,176 @@ class AtendimentoClinicoResource extends Resource
 
     protected static ?string $navigationLabel = 'Atendimentos Clínicos';
 
-    
+    protected static string $modalWidth = 'full';
 
     public static function form(Form $form): Form
     {
         return $form
-            ->modalWidth(MaxWidth::FiveExtraLarge)
             ->schema([
                 Forms\Components\Fieldset::make('Dados do Paciente')
                     ->schema([
+                        Forms\Components\Select::make('medico_id')
+                            ->label('Médico')
+                            ->relationship('medico', 'name')
+                            ->default(auth()->user()->id)   
+                            ->searchable()
+                            ->required(),
+                        
                         Forms\Components\Select::make('paciente_id')
                             ->label('Paciente')
                             ->relationship('paciente', 'nome')
+                            ->preload()
                             ->searchable()
-                            ->required(),
+                            ->required()
+                            ->createOptionForm([
+                                Forms\Components\TextInput::make('nome')
+                                    ->required(true)
+                                    ->maxLength(100)
+
+
+                                    ->label('Nome Completo')
+                                    ->columnSpanFull(),
+                                Forms\Components\Grid::make(['default' => 2, 'md' => 3])
+                                    ->schema([
+                                        Forms\Components\DatePicker::make('data_nascimento')
+                                            ->required(false)
+                                            ->label('Data de Nascimento'),
+                                        Forms\Components\TextInput::make('cpf')
+                                            ->required(false)
+                                            ->maxLength(14)
+                                            ->mask('999.999.999-99')
+                                            ->unique(ignoreRecord: true)
+                                            ->label('CPF')
+                                            ->rule(function () {
+                                                return function ($attribute, $value, $fail) {
+                                                    $cpf = preg_replace('/\D/', '', $value);
+                                                    if (strlen($cpf) !== 11) {
+                                                        return $fail('O CPF deve conter 11 dígitos.');
+                                                    }
+                                                    if (preg_match('/(\d)\1{10}/', $cpf)) {
+                                                        return $fail('CPF inválido.');
+                                                    }
+                                                    for ($t = 9; $t < 11; $t++) {
+                                                        $d = 0;
+                                                        for ($c = 0; $c < $t; $c++) {
+                                                            $d += $cpf[$c] * (($t + 1) - $c);
+                                                        }
+                                                        $d = ((10 * $d) % 11) % 10;
+                                                        if ($cpf[$c] != $d) {
+                                                            return $fail('CPF inválido.');
+                                                        }
+                                                    }
+                                                };
+                                            }),
+                                        Forms\Components\TextInput::make('rg')
+                                            ->maxLength(20)
+                                            ->nullable()
+                                            ->label('RG'),
+                                    ]),
+                                Forms\Components\Grid::make(['default' => 2, 'md' => 3])
+                                    ->schema([
+                                        Forms\Components\Select::make('genero')
+                                            ->options([
+                                                1 => 'Masculino',
+                                                2 => 'Feminino',
+                                                3 => 'Outro',
+                                            ])
+                                            ->required(false)
+                                            ->label('Gênero'),
+                                        Forms\Components\Select::make('estado_civil')
+                                            ->options([
+                                                1 => 'Solteiro',
+                                                2 => 'Casado',
+                                                3 => 'Divorciado',
+                                                4 => 'Viúvo',
+                                            ])
+                                            ->required(false)
+                                            ->label('Estado Civil'),
+                                        Forms\Components\TextInput::make('profissao')
+                                            ->maxLength(100)
+                                            ->nullable()
+                                            ->label('Profissão'),
+                                    ]),
+                            ]),
                         Forms\Components\DateTimePicker::make('data_hora_atendimento')
                             ->label('Data/Hora do Atendimento')
+                            ->default(now()->format('Y-m-d H:i:s'))
                             ->required(),
-                        Forms\Components\Select::make('medico_id')
-                            ->label('Médico')
-                            ->relationship('medico', 'nome')
-                            ->searchable()
-                            ->required(),
-                        Forms\Components\Select::make('tipo_atendimento')
-                            ->label('Tipo de Atendimento')
+                        Forms\Components\ToggleButtons::make('status')
+                            ->label('Status do Atendimento')
+                            ->inline()
                             ->options([
-                                'consulta' => 'Consulta',
-                                'retorno' => 'Retorno',
-                                'emergencia' => 'Emergência',
-                                // Adicione outros tipos conforme necessário
+                                '1' => 'Aberta',
+                                '2' => 'Finalizada',
+                                '0' => 'Cancelada',
                             ])
-                            ->required(),
-                        Forms\Components\Textarea::make('observacoes')
-                            ->label('Observações'),
-                        Forms\Components\Select::make('status')
-                            ->label('Status')
-                            ->options([
-                                'aberto' => 'Aberto',
-                                'finalizado' => 'Finalizado',
-                                'cancelado' => 'Cancelado',
+                            ->icons([
+                                '1' => 'heroicon-o-check-circle',
+                                '2' => 'heroicon-o-x-circle',
+                                '0' => 'heroicon-o-exclamation-circle',
                             ])
+                            ->colors([
+                                '1' => 'info',
+                                '2' => 'success',
+                                '0' => 'danger',
+                            ])
+                            ->default('1')
                             ->required(),
-                    ])
-                    ->columnSpanFull(),
+                    ]),
 
                 Forms\Components\Fieldset::make('Queixa Principal e História')
                     ->schema([
                         Forms\Components\Textarea::make('qp')
                             ->label('Queixa Principal')
-                            ->rows(2),
+                            ->autosize(),
                         Forms\Components\Textarea::make('hdp')
                             ->label('História da Doença Atual')
-                            ->rows(2),
-                        Forms\Components\Select::make('doenca_id')
-                            ->label('Doença')
-                            ->relationship('doenca', 'nome')
-                            ->searchable(),
-                        Forms\Components\DatePicker::make('data_inicio_sintomas')
-                            ->label('Data de Início dos Sintomas'),
+                            ->autosize(),
+                        // Forms\Components\Repeater::make('doencas_preexistentes')
+                        //     ->columnSpanFull()
+                        //     ->label('Doenças Preexistentes')
+                        //     ->schema([
+                        //         Forms\Components\Select::make('doenca_id')
+                        //             ->label('Doença (Nome e CID)')
+                        //             ->relationship('doenca', 'nome')
+                        //             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
+                        //             ->searchable(['nome', 'cid']),
+                        //         Forms\Components\DatePicker::make('data_inicio_sintomas')
+                        //             ->date('Y')
+                        //             ->label('Data de Início dos Sintomas'),
+                        //     ])
+                        //     ->addActionLabel('Adicionar Doença'),
+                        Forms\Components\CheckboxList::make('doencas_preexistentes')
+                            ->label('Doenças Preexistentes')
+                            ->relationship('doenca', 'nome', fn($query) => $query->where('grave', 1))
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
+                            ->searchable()
+                            ->columns(2),
+                            
+
+                        Forms\Components\Fieldset::make('Data das Doenças Preexistentes')
+                            ->schema([
+                                Forms\Components\Repeater::make('doencas_preexistentes')
+                                    ->columnSpanFull()
+                                    ->label('Doenças Preexistentes')
+                                    ->schema([
+                                        Forms\Components\Select::make('doenca_id')
+                                            ->label('Doença (Nome e CID)')
+                                            ->relationship('doenca', 'nome')
+                                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
+                                            ->searchable(['nome', 'cid']),
+                                        Forms\Components\DatePicker::make('data_inicio_sintomas')
+                                            ->date('Y')
+                                            ->label('Data de Início dos Sintomas'),
+                                    ])
+                                    ->addActionLabel('Adicionar Doença'),
+                            ])
+                            ->columns(2),
+                                    
+                                    
+
+
+                            
                         Forms\Components\Textarea::make('cirurgias_hospitalizacoes')
                             ->label('Cirurgias/Hospitalizações')
                             ->rows(2),
@@ -211,6 +323,9 @@ class AtendimentoClinicoResource extends Resource
                             ->rows(2),
                     ])
                     ->columnSpanFull(),
+                Forms\Components\Textarea::make('observacoes')
+                    ->label('Observações')
+                    ->columnSpanFull(),
 
                 Forms\Components\Fieldset::make('Anexos')
                     ->schema([
@@ -221,7 +336,6 @@ class AtendimentoClinicoResource extends Resource
                     ->columnSpanFull(),
             ]);
     }
-    
 
     public static function table(Table $table): Table
     {
@@ -249,4 +363,5 @@ class AtendimentoClinicoResource extends Resource
             'index' => Pages\ManageAtendimentoClinicos::route('/'),
         ];
     }
+
 }
