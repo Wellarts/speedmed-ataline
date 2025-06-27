@@ -13,6 +13,8 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Models\Doenca;
+use Filament\Forms\Set;
 
 class AtendimentoClinicoResource extends Resource
 {
@@ -149,46 +151,38 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\Textarea::make('hdp')
                             ->label('História da Doença Atual')
                             ->autosize(),
-                        // Forms\Components\Repeater::make('doencas_preexistentes')
-                        //     ->columnSpanFull()
-                        //     ->label('Doenças Preexistentes')
-                        //     ->schema([
-                        //         Forms\Components\Select::make('doenca_id')
-                        //             ->label('Doença (Nome e CID)')
-                        //             ->relationship('doenca', 'nome')
-                        //             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
-                        //             ->searchable(['nome', 'cid']),
-                        //         Forms\Components\DatePicker::make('data_inicio_sintomas')
-                        //             ->date('Y')
-                        //             ->label('Data de Início dos Sintomas'),
-                        //     ])
-                        //     ->addActionLabel('Adicionar Doença'),
+                        
                         Forms\Components\CheckboxList::make('doencas_preexistentes')
                             ->label('Doenças Preexistentes')
                             ->relationship('doenca', 'nome', fn($query) => $query->where('grave', 1))
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
+                            ->live()
+                            ->afterStateUpdated(function ($state, Set $set) {
+                                if (is_array($state) && count($state)) {
+                                    // Busca os nomes das doenças selecionadas
+                                    $doencas = Doenca::whereIn('id', $state)->pluck('nome')->toArray();
+                                    // Junta os nomes em uma string separada por quebra de linha
+                                    $nomes = implode("\n", $doencas);
+                                    // Seta o campo data_inicio_sintomas com os nomes das doenças
+                                    $set('data_inicio_sintomas', $nomes.':');
+                                } else {
+                                    $set('data_inicio_sintomas', '');
+                                }
+                            })
                             ->searchable()
-                            ->columns(2),
-                            
-
-                        Forms\Components\Fieldset::make('Data das Doenças Preexistentes')
-                            ->schema([
-                                Forms\Components\Repeater::make('doencas_preexistentes')
-                                    ->columnSpanFull()
-                                    ->label('Doenças Preexistentes')
-                                    ->schema([
-                                        Forms\Components\Select::make('doenca_id')
-                                            ->label('Doença (Nome e CID)')
-                                            ->relationship('doenca', 'nome')
-                                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
-                                            ->searchable(['nome', 'cid']),
-                                        Forms\Components\DatePicker::make('data_inicio_sintomas')
-                                            ->date('Y')
-                                            ->label('Data de Início dos Sintomas'),
-                                    ])
-                                    ->addActionLabel('Adicionar Doença'),
-                            ])
-                            ->columns(2),
+                            ->columns(2),                      
+                        Forms\Components\TextArea::make('data_inicio_sintomas')
+                              ->autosize()
+                                 
+                                 ->afterStateUpdated(function ($state, Set $set) {
+                                     if (empty($state)) {
+                                         $set('data_inicio_sintomas', 'Sem informação');
+                                     }
+                                 })
+                              ->label('Data de Início dos Sintomas'),
+                                 
+                                    
+                           
                                     
                                     
 
