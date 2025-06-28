@@ -59,7 +59,6 @@ class AtendimentoClinico extends Model
 
     protected $casts = [
         'data_hora_atendimento' => 'datetime',
-        'data_inicio_sintomas' => 'date',
         'prescricao_medicamentosa' => 'json',
         'exames_solicitados' => 'json',
         'anexos_resultados' => 'json',
@@ -84,7 +83,7 @@ class AtendimentoClinico extends Model
 
     public function medicamentoAlergias()
     {
-        return $this->belongsTo(Medicamento::class, 'medicamento_alergias_id');
+        return $this->belongsToMany(Medicamento::class);
     }
 
     public function medicamentoUso()

@@ -162,9 +162,9 @@ class AtendimentoClinicoResource extends Resource
                                     // Busca os nomes das doenças selecionadas
                                     $doencas = Doenca::whereIn('id', $state)->pluck('nome')->toArray();
                                     // Junta os nomes em uma string separada por quebra de linha
-                                    $nomes = implode("\n", $doencas);
+                                    $nomes = implode(' - '."\n", $doencas);
                                     // Seta o campo data_inicio_sintomas com os nomes das doenças
-                                    $set('data_inicio_sintomas', $nomes.':');
+                                    $set('data_inicio_sintomas', $nomes.' - ');
                                 } else {
                                     $set('data_inicio_sintomas', '');
                                 }
@@ -179,30 +179,34 @@ class AtendimentoClinicoResource extends Resource
                                          $set('data_inicio_sintomas', 'Sem informação');
                                      }
                                  })
-                              ->label('Data de Início dos Sintomas'),
-                                 
-                                    
-                           
-                                    
-                                    
-
-
-                            
+                              ->label('Data de Início dos Sintomas'),    
                         Forms\Components\Textarea::make('cirurgias_hospitalizacoes')
                             ->label('Cirurgias/Hospitalizações')
-                            ->rows(2),
+                            ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),
 
                 Forms\Components\Fieldset::make('Alergias e Medicamentos')
                     ->schema([
-                        Forms\Components\Select::make('medicamento_alergias_id')
-                            ->label('Alergias a Medicamentos')
-                            ->relationship('medicamentoAlergias', 'nome')
+                        Forms\Components\CheckboxList::make('medicamento_alergia')
+                            ->label('Alergia Medicamentosa')
+                            ->relationship('medicamentoAlergias', 'nome', fn($query) => $query->where('alergia', 1))
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome)
+                            // ->live()
+                            // ->afterStateUpdated(function ($state, Set $set) {
+                            //     if (is_array($state) && count($state)) {
+                            //         // Busca os nomes das medicamento selecionadas
+                            //         $medicamento = Medicamento::whereIn('id', $state)->pluck('nome')->toArray();
+                            //         // Junta os nomes em uma string separada por quebra de linha
+                            //         $nomes = implode(' - '."\n", $medicamento);
+                            //         // Seta o campo data_inicio_sintomas com os nomes das doenças
+                            //         $set('data_inicio_sintomas', $nomes.' - ');
+                            //     } else {
+                            //         $set('data_inicio_sintomas', '');
+                            //     }
+                            // })
                             ->searchable()
-                            ->multiple(),
-                        Forms\Components\TextInput::make('alimento_alergias')
-                            ->label('Alergias Alimentares'),
+                            ->columns(2), 
                         Forms\Components\TextInput::make('outros_alergias')
                             ->label('Outras Alergias'),
                         Forms\Components\Select::make('medicamento_uso_id')

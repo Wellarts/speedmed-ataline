@@ -38,6 +38,10 @@ class MedicamentoResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->unique(ignoreRecord: true),
+                Forms\Components\Checkbox::make('alergia')
+                    ->label('Alergia')
+                    ->default(false)
+                    ->helperText('Marque se o medicamento é comum em alergias'),
             ]);
     }
 
@@ -53,6 +57,12 @@ class MedicamentoResource extends Resource
                     ->label('Princípio Ativo')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\BooleanColumn::make('alergia')
+                    ->label('Alergia')
+                    ->trueIcon('heroicon-o-check')
+                    ->falseIcon('heroicon-o-x')
+                    ->sortable()
+                    ->toggleable(),
                 
             ])
             ->filters([

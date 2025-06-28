@@ -13,6 +13,7 @@ class Medicamento extends Model
     protected $fillable = [
         'nome',
         'principio_ativo',
+        'alergia'
     ];
 
     protected $casts = [
