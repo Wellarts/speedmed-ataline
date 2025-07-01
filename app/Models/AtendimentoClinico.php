@@ -63,12 +63,13 @@ class AtendimentoClinico extends Model
         'exames_solicitados' => 'json',
         'anexos_resultados' => 'json',
         'doenca_preexistente' => 'array',
-        
+        'hipotese_diagnostica' => 'array',
+        // 'hipotese_diagnostica_id' should not be cast to array or json
     ];  
     
     public function paciente()
     {
-        return $this->belongsTo(Paciente::class, 'paciente_id');
+        return $this->belongsTo(Paciente::class);
     }
 
     public function medico()
@@ -78,7 +79,9 @@ class AtendimentoClinico extends Model
 
     public function doenca()
     {
-        return $this->belongsToMany(Doenca::class);
+        return $this->belongsToMany(Doenca::class)
+            ->withPivot('data_inicio'); // Adiciona o campo extra 'texto' da tabela pivô
+            
     }
 
     public function medicamentoAlergias()
@@ -88,17 +91,23 @@ class AtendimentoClinico extends Model
 
     public function medicamentoUso()
     {
-        return $this->belongsTo(Medicamento::class, 'medicamento_uso_id');
+        return $this->belongsToMany(Medicamento::class,);
     }
 
     public function doencaFamiliar()
     {
-        return $this->belongsTo(Doenca::class, 'doenca_familiar_id');
+        // Referencia explicitamente a tabela pivô e as chaves estrangeiras
+        return $this->belongsToMany(
+            Doenca::class,
+            'atendimento_clinico_doenca_familiar', // nome da tabela pivô
+            'atendimento_clinico_id', // chave estrangeira deste modelo na tabela pivô
+            'doenca_id' // chave estrangeira do modelo relacionado na tabela pivô
+        ); // exemplo de campo extra na tabela pivô
     }
 
     public function hipoteseDiagnostica()
     {
-        return $this->belongsTo(Doenca::class, 'hipotese_diagnostica_id');
+        return $this->belongsTo(Doenca::class);
     }
 
     public function exames()

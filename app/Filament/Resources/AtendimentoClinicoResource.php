@@ -157,28 +157,38 @@ class AtendimentoClinicoResource extends Resource
                             ->relationship('doenca', 'nome', fn($query) => $query->where('grave', 1))
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
                             ->live()
-                            ->afterStateUpdated(function ($state, Set $set) {
+                            ->afterStateUpdated(function ($state, Set $set, $get) {
                                 if (is_array($state) && count($state)) {
                                     // Busca os nomes das doenças selecionadas
                                     $doencas = Doenca::whereIn('id', $state)->pluck('nome')->toArray();
                                     // Junta os nomes em uma string separada por quebra de linha
                                     $nomes = implode(' - '."\n", $doencas);
-                                    // Seta o campo data_inicio_sintomas com os nomes das doenças
-                                    $set('data_inicio_sintomas', $nomes.' - ');
-                                } else {
+                                    // Seta o campo doenca_preexistente com os nomes das doenças
+                                    $valorAtual = $get('data_inicio_sintomas') ?? '';
+                                    // Busca o último valor selecionado
+                                    $ultimoSelecionado = end($state);
+                                    if ($ultimoSelecionado) {
+                                        $doenca = Doenca::find($ultimoSelecionado);
+                                        if ($doenca) {
+                                            $nome = $doenca->nome . ' - ';
+                                            // Adiciona apenas se ainda não estiver presente
+                                            if (strpos($valorAtual, $nome) === false) {
+                                                $novoValor = trim($valorAtual . ($valorAtual ? "\n" : '') . $nome);
+                                                $set('data_inicio_sintomas', $novoValor);
+                                            }
+                                        }
+                                    }
+                                }
+                                // Se não houver seleção, limpa o campo
+                                if (empty($state)) {
                                     $set('data_inicio_sintomas', '');
                                 }
-                            })
-                            ->searchable()
-                            ->columns(2),                      
+                            }),
+
+                                      
+                                       
                         Forms\Components\TextArea::make('data_inicio_sintomas')
-                              ->autosize()
-                                 
-                                 ->afterStateUpdated(function ($state, Set $set) {
-                                     if (empty($state)) {
-                                         $set('data_inicio_sintomas', 'Sem informação');
-                                     }
-                                 })
+                              ->autosize()     
                               ->label('Data de Início dos Sintomas'),    
                         Forms\Components\Textarea::make('cirurgias_hospitalizacoes')
                             ->label('Cirurgias/Hospitalizações')
@@ -192,28 +202,17 @@ class AtendimentoClinicoResource extends Resource
                             ->label('Alergia Medicamentosa')
                             ->relationship('medicamentoAlergias', 'nome', fn($query) => $query->where('alergia', 1))
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome)
-                            // ->live()
-                            // ->afterStateUpdated(function ($state, Set $set) {
-                            //     if (is_array($state) && count($state)) {
-                            //         // Busca os nomes das medicamento selecionadas
-                            //         $medicamento = Medicamento::whereIn('id', $state)->pluck('nome')->toArray();
-                            //         // Junta os nomes em uma string separada por quebra de linha
-                            //         $nomes = implode(' - '."\n", $medicamento);
-                            //         // Seta o campo data_inicio_sintomas com os nomes das doenças
-                            //         $set('data_inicio_sintomas', $nomes.' - ');
-                            //     } else {
-                            //         $set('data_inicio_sintomas', '');
-                            //     }
-                            // })
                             ->searchable()
                             ->columns(2), 
-                        Forms\Components\TextInput::make('outros_alergias')
+                        Forms\Components\TextArea::make('outros_alergias')
+                            ->autosize()
                             ->label('Outras Alergias'),
-                        Forms\Components\Select::make('medicamento_uso_id')
-                            ->label('Medicamentos em Uso')
-                            ->relationship('medicamentoUso', 'nome')
+                         Forms\Components\CheckboxList::make('medicamento_uso')
+                            ->label('Medicamentos em Uso Contínuo')
+                            ->relationship('medicamentoUso', 'nome', fn($query) => $query->where('uso_continuo', 1))
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome)
                             ->searchable()
-                            ->multiple(),
+                            ->columns(2), 
                         Forms\Components\Textarea::make('medicamento_uso_detalhes')
                             ->label('Detalhes dos Medicamentos em Uso')
                             ->rows(2),
@@ -222,13 +221,34 @@ class AtendimentoClinicoResource extends Resource
 
                 Forms\Components\Fieldset::make('Histórico Familiar')
                     ->schema([
-                        Forms\Components\Select::make('doenca_familiar_id')
-                            ->label('Doenças Familiares')
-                            ->relationship('doencaFamiliar', 'nome')
+                        Forms\Components\CheckboxList::make('doencas_familiares')
+                            ->label('Doenças Preexistentes')
+                            ->relationship('doencaFamiliar', 'nome', fn($query) => $query->where('grave', 1))
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
+                            ->live()
+                            ->afterStateUpdated(function ($state, Set $set) {
+                                if (is_array($state) && count($state)) {
+                                    // Busca os nomes das doenças selecionadas
+                                    $doencas = Doenca::whereIn('id', $state)->pluck('nome')->toArray();
+                                    // Junta os nomes em uma string separada por quebra de linha
+                                    $nomes = implode(' - '."\n", $doencas);
+                                    // Seta o campo doenca_familiar_parentesco com os nomes das doenças
+                                    $set('doenca_familiar_parentesco', $nomes.' - ');
+                                } else {
+                                    $set('doenca_familiar_parentesco', '');
+                                }
+                            })
                             ->searchable()
-                            ->multiple(),
-                        Forms\Components\TextInput::make('doenca_familiar_parentesco')
-                            ->label('Parentesco'),
+                            ->columns(2),                      
+                        Forms\Components\TextArea::make('doenca_familiar_parentesco')
+                              ->autosize()
+                                 
+                                 ->afterStateUpdated(function ($state, Set $set) {
+                                     if (empty($state)) {
+                                         $set('doenca_familiar_parentesco', 'Sem informação');
+                                     }
+                                 })
+                              ->label('Doenças na Família e Parentesco'), 
                     ])
                     ->columnSpanFull(),
 
@@ -339,7 +359,23 @@ class AtendimentoClinicoResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('paciente.nome')
+                    ->label('Paciente')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('data_hora_atendimento')
+                    ->label('Data/Hora do Atendimento')
+                    ->dateTime('d/m/Y H:i'),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        '1' => 'Aberta',
+                        '2' => 'Finalizada',
+                        '0' => 'Cancelada',
+                    })
+                    ->sortable()
+                    ->searchable()
+                    
             ])
             ->filters([
                 //
@@ -362,4 +398,4 @@ class AtendimentoClinicoResource extends Resource
         ];
     }
 
-}
+}   

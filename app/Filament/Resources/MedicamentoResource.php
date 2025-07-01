@@ -42,6 +42,10 @@ class MedicamentoResource extends Resource
                     ->label('Alergia')
                     ->default(false)
                     ->helperText('Marque se o medicamento é comum em alergias'),
+                Forms\Components\Checkbox::make('uso_continuo')
+                    ->label('Uso Contínuo')
+                    ->default(false)
+                    ->helperText('Marque se o medicamento é usado continuamente'),
             ]);
     }
 
@@ -59,6 +63,12 @@ class MedicamentoResource extends Resource
                     ->sortable(),
                 Tables\Columns\BooleanColumn::make('alergia')
                     ->label('Alergia')
+                    ->trueIcon('heroicon-o-check')
+                    ->falseIcon('heroicon-o-x')
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\BooleanColumn::make('uso_continuo')
+                    ->label('Uso Contínuo')
                     ->trueIcon('heroicon-o-check')
                     ->falseIcon('heroicon-o-x')
                     ->sortable()
