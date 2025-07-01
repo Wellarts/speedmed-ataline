@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Models\Doenca;
 use Filament\Forms\Set;
+use App\Models\Medicamento;
 
 class AtendimentoClinicoResource extends Resource
 {
@@ -158,30 +159,36 @@ class AtendimentoClinicoResource extends Resource
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
                             ->live()
                             ->afterStateUpdated(function ($state, Set $set, $get) {
+                                // Recupera o valor atual do campo
+                                $valorAtual = $get('data_inicio_sintomas') ?? '';
+
                                 if (is_array($state) && count($state)) {
                                     // Busca os nomes das doenças selecionadas
                                     $doencas = Doenca::whereIn('id', $state)->pluck('nome')->toArray();
-                                    // Junta os nomes em uma string separada por quebra de linha
-                                    $nomes = implode(' - '."\n", $doencas);
-                                    // Seta o campo doenca_preexistente com os nomes das doenças
-                                    $valorAtual = $get('data_inicio_sintomas') ?? '';
-                                    // Busca o último valor selecionado
-                                    $ultimoSelecionado = end($state);
-                                    if ($ultimoSelecionado) {
-                                        $doenca = Doenca::find($ultimoSelecionado);
-                                        if ($doenca) {
-                                            $nome = $doenca->nome . ' - ';
-                                            // Adiciona apenas se ainda não estiver presente
-                                            if (strpos($valorAtual, $nome) === false) {
-                                                $novoValor = trim($valorAtual . ($valorAtual ? "\n" : '') . $nome);
-                                                $set('data_inicio_sintomas', $novoValor);
+                                    // Junta os nomes em uma string, cada um em uma linha terminando com " -"
+                                    $novasLinhas = array_map(fn($nome) => trim($nome) . ' - ', $doencas);
+
+                                    // Quebra o valor atual em linhas e remove espaços extras
+                                    $linhasExistentes = array_map('trim', explode("\n", $valorAtual));
+
+                                    // Adiciona apenas as linhas que ainda não existem (comparando até o " -")
+                                    foreach ($novasLinhas as $linha) {
+                                        $existe = false;
+                                        $parteLinha = strtolower(trim(strtok($linha, '-')));
+                                        foreach ($linhasExistentes as $existente) {
+                                            $parteExistente = strtolower(trim(strtok($existente, '-')));
+                                            if ($parteLinha === $parteExistente) {
+                                                $existe = true;
+                                                break;
                                             }
                                         }
+                                        if ($linha && !$existe) {
+                                            $linhasExistentes[] = $linha;
+                                        }
                                     }
-                                }
-                                // Se não houver seleção, limpa o campo
-                                if (empty($state)) {
-                                    $set('data_inicio_sintomas', '');
+
+                                    // Atualiza o campo com todas as linhas únicas
+                                    $set('data_inicio_sintomas', implode("\n", array_filter($linhasExistentes)));
                                 }
                             }),
 
@@ -211,77 +218,141 @@ class AtendimentoClinicoResource extends Resource
                             ->label('Medicamentos em Uso Contínuo')
                             ->relationship('medicamentoUso', 'nome', fn($query) => $query->where('uso_continuo', 1))
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome)
+                            ->live()
+                            ->afterStateUpdated(function ($state, Set $set, $get) {
+                                // Recupera o valor atual do campo
+                                $valorAtual = $get('medicamento_uso_detalhes') ?? '';
+
+                                if (is_array($state) && count($state)) {
+                                    // Busca os nomes das doenças selecionadas
+                                    $medicamento = Medicamento::whereIn('id', $state)->pluck('nome')->toArray();
+                                    // Junta os nomes em uma string, cada um em uma linha terminando com " -"
+                                    $novasLinhas = array_map(fn($nome) => trim($nome) . ' - ', $medicamento);
+
+                                    // Quebra o valor atual em linhas e remove espaços extras
+                                    $linhasExistentes = array_map('trim', explode("\n", $valorAtual));
+
+                                    // Adiciona apenas as linhas que ainda não existem (comparando até o " -")
+                                    foreach ($novasLinhas as $linha) {
+                                        $existe = false;
+                                        $parteLinha = strtolower(trim(strtok($linha, '-')));
+                                        foreach ($linhasExistentes as $existente) {
+                                            $parteExistente = strtolower(trim(strtok($existente, '-')));
+                                            if ($parteLinha === $parteExistente) {
+                                                $existe = true;
+                                                break;
+                                            }
+                                        }
+                                        if ($linha && !$existe) {
+                                            $linhasExistentes[] = $linha;
+                                        }
+                                    }
+
+                                    // Atualiza o campo com todas as linhas únicas
+                                    $set('medicamento_uso_detalhes', implode("\n", array_filter($linhasExistentes)));
+                                }
+                            })
+
                             ->searchable()
                             ->columns(2), 
                         Forms\Components\Textarea::make('medicamento_uso_detalhes')
                             ->label('Detalhes dos Medicamentos em Uso')
-                            ->rows(2),
+                            ->autosize(),
                     ])
                     ->columnSpanFull(),
 
                 Forms\Components\Fieldset::make('Histórico Familiar')
                     ->schema([
                         Forms\Components\CheckboxList::make('doencas_familiares')
-                            ->label('Doenças Preexistentes')
+                            ->label('Doenças em Famíliares')
                             ->relationship('doencaFamiliar', 'nome', fn($query) => $query->where('grave', 1))
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
                             ->live()
-                            ->afterStateUpdated(function ($state, Set $set) {
+                            ->afterStateUpdated(function ($state, Set $set, $get) {
+                                // Recupera o valor atual do campo
+                                $valorAtual = $get('doenca_familiar_parentesco') ?? '';
+
                                 if (is_array($state) && count($state)) {
                                     // Busca os nomes das doenças selecionadas
                                     $doencas = Doenca::whereIn('id', $state)->pluck('nome')->toArray();
-                                    // Junta os nomes em uma string separada por quebra de linha
-                                    $nomes = implode(' - '."\n", $doencas);
-                                    // Seta o campo doenca_familiar_parentesco com os nomes das doenças
-                                    $set('doenca_familiar_parentesco', $nomes.' - ');
-                                } else {
-                                    $set('doenca_familiar_parentesco', '');
+                                    // Junta os nomes em uma string, cada um em uma linha terminando com " -"
+                                    $novasLinhas = array_map(fn($nome) => trim($nome) . ' - ', $doencas);
+
+                                    // Quebra o valor atual em linhas e remove espaços extras
+                                    $linhasExistentes = array_map('trim', explode("\n", $valorAtual));
+
+                                    // Adiciona apenas as linhas que ainda não existem (comparando até o " -")
+                                    foreach ($novasLinhas as $linha) {
+                                        $existe = false;
+                                        $parteLinha = strtolower(trim(strtok($linha, '-')));
+                                        foreach ($linhasExistentes as $existente) {
+                                            $parteExistente = strtolower(trim(strtok($existente, '-')));
+                                            if ($parteLinha === $parteExistente) {
+                                                $existe = true;
+                                                break;
+                                            }
+                                        }
+                                        if ($linha && !$existe) {
+                                            $linhasExistentes[] = $linha;
+                                        }
+                                    }
+
+                                    // Atualiza o campo com todas as linhas únicas
+                                    $set('doenca_familiar_parentesco', implode("\n", array_filter($linhasExistentes)));
                                 }
                             })
                             ->searchable()
                             ->columns(2),                      
                         Forms\Components\TextArea::make('doenca_familiar_parentesco')
-                              ->autosize()
-                                 
-                                 ->afterStateUpdated(function ($state, Set $set) {
-                                     if (empty($state)) {
-                                         $set('doenca_familiar_parentesco', 'Sem informação');
-                                     }
-                                 })
+                              ->autosize()   
                               ->label('Doenças na Família e Parentesco'), 
                     ])
                     ->columnSpanFull(),
 
                 Forms\Components\Fieldset::make('Estilo de Vida')
                     ->schema([
-                        Forms\Components\Select::make('tabagismo')
+                        Forms\Components\ToggleButtons::make('tabagismo')
                             ->label('Tabagismo')
-                            ->options([
-                                'nao' => 'Não',
-                                'sim' => 'Sim',
-                                'ex' => 'Ex',
-                            ]),
-                        Forms\Components\Select::make('alcoolismo')
+                            ->boolean()
+                            ->grouped()
+                            ->default(false)
+                            ->inline(false),
+                        Forms\Components\ToggleButtons::make('alcoolismo')
                             ->label('Alcoolismo')
-                            ->options([
-                                'nao' => 'Não',
-                                'sim' => 'Sim',
-                                'ex' => 'Ex',
-                            ]),
-                        Forms\Components\Select::make('drogas')
+                            ->boolean()
+                            ->default(false)
+                            ->grouped()
+                            ->inline(false),
+                        Forms\Components\ToggleButtons::make('drogas')
                             ->label('Drogas')
-                            ->options([
-                                'nao' => 'Não',
-                                'sim' => 'Sim',
-                                'ex' => 'Ex',
-                            ]),
-                        Forms\Components\TextInput::make('atividade_fisica')
-                            ->label('Atividade Física'),
-                        Forms\Components\TextInput::make('dieta')
-                            ->label('Dieta'),
+                            ->boolean()
+                            ->default(false)
+                            ->grouped()
+                            ->inline(false),
+                        Forms\Components\ToggleButtons::make('atividade_fisica')
+                            ->label('Atividade Física')
+                            ->boolean()
+                            ->default(false)
+                            ->grouped()
+                            ->inline(false),
+                        Forms\Components\ToggleButtons::make('dieta')
+                            ->label('Dieta')
+                            ->boolean()
+                            ->default(false)
+                            ->grouped()
+                            ->inline(false),
                         Forms\Components\Textarea::make('obs_estilo_vida')
                             ->label('Observações sobre Estilo de Vida')
-                            ->rows(2),
+                            ->autosize(),
+                           // ->columnSpanFull(),
+                    ])
+                    ->columns([
+                        'default' => 1,
+                        'sm' => 2,
+                        'md' => 2,
+                        'lg' => 2,
+                        'xl' => 2,
+                        '2xl' => 2,                    
                     ])
                     ->columnSpanFull(),
 
