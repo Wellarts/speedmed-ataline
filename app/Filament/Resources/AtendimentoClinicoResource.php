@@ -358,30 +358,91 @@ class AtendimentoClinicoResource extends Resource
 
                 Forms\Components\Fieldset::make('Exame Físico')
                     ->schema([
-                        Forms\Components\DatePicker::make('dum')
-                            ->label('DUM'),
-                        Forms\Components\TextInput::make('pa')
-                            ->label('PA'),
-                        Forms\Components\TextInput::make('peso')
-                            ->label('Peso'),
-                        Forms\Components\TextInput::make('altura')
-                            ->label('Altura'),
-                        Forms\Components\TextInput::make('imc')
-                            ->label('IMC'),
-                        Forms\Components\TextInput::make('fc')
-                            ->label('FC'),
-                        Forms\Components\TextInput::make('fr')
-                            ->label('FR'),
-                        Forms\Components\TextInput::make('temperatura')
-                            ->label('Temperatura'),
-                        Forms\Components\TextInput::make('saturacao')
-                            ->label('Saturação'),
-                        Forms\Components\Textarea::make('obs_exame_fisico')
-                            ->label('Observações do Exame Físico')
-                            ->rows(2),
-                        Forms\Components\Textarea::make('exame_fisico')
-                            ->label('Exame Físico Detalhado')
-                            ->rows(2),
+                        Forms\Components\Grid::make([
+                            'default' => 1,
+                            'sm' => 2,
+                            'md' => 3,
+                            'lg' => 4,
+                        ])->schema([
+                            Forms\Components\DatePicker::make('dum')
+                                ->label('DUM'),
+                            Forms\Components\TextInput::make('pa')
+                                ->label('PA(mmHg)'),
+                            Forms\Components\TextInput::make('peso')
+                                ->label('Peso')
+                                ->hint('kg' . ' (Ex: 70.5)')
+                                ->numeric()
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function ($state, Set $set, $get) {
+                                    $peso = floatval($state);
+                                    $altura = floatval($get('altura'));
+                                    if ($peso > 0 && $altura > 0) {
+                                        $imc = $peso / ($altura * $altura);
+                                        $set('imc', number_format($imc, 2, '.', ''));
+                                    }
+                                }),
+                            Forms\Components\TextInput::make('altura')
+                                ->label('Altura')
+                                ->numeric()
+                                ->hint('m' . ' (Ex: 1.75)')
+                                ->live(onBlur: true)
+                                ->afterStateUpdated(function ($state, Set $set, $get) {
+                                    $altura = floatval($state);
+                                    $peso = floatval($get('peso'));
+                                    if ($peso > 0 && $altura > 0) {
+                                        $imc = $peso / ($altura * $altura);
+                                        $set('imc', number_format($imc, 2, '.', ''));
+                                    }
+                                }),
+                            Forms\Components\TextInput::make('imc')
+                                ->readOnly()
+                                ->label('IMC')
+                                ->suffix(function ($state) {
+                                    $imc = floatval($state);
+                                    if ($imc > 0 && $imc < 18) {
+                                        return ' 🟨'; // amarelo
+                                    } elseif ($imc >= 18.5 && $imc <= 24.9) {
+                                        return '🟩';
+                                    } elseif ($imc >= 25 && $imc <= 29.9) {
+                                        return '🟧';
+                                    } elseif ($imc > 29.9) {
+                                        return '🟥';
+                                    }
+                                    return '';
+                                })
+                                ->extraAttributes(function ($state) {
+                                    $imc = floatval($state);
+                                    if ($imc > 0 && $imc < 18) {
+                                        return ['style' => 'color: #eab308; font-weight: bold;']; // amarelo
+                                    } elseif ($imc >= 18.5 && $imc <= 24.9) {
+                                        return ['style' => 'color: #22c55e; font-weight: bold;']; // verde
+                                    } elseif ($imc >= 25 && $imc <= 29.9) {
+                                        return ['style' => 'color: #f97316; font-weight: bold;']; // laranja
+                                    } elseif ($imc > 29.9) {
+                                        return ['style' => 'color: #ef4444; font-weight: bold;']; // vermelho
+                                    }
+                                    return [];
+                                }),
+                            Forms\Components\TextInput::make('fc')
+                                ->label('FC (bpm)'),                                
+                            Forms\Components\TextInput::make('fr')
+                                ->label('FR (/min)'),
+                            Forms\Components\TextInput::make('temperatura')
+                                ->label('Temperatura (°C)'),
+                            Forms\Components\TextInput::make('saturacao')
+                                ->label('Saturação  (%)'),
+                        ]),
+                        Forms\Components\Grid::make([
+                            'default' => 1,
+                            'md' => 2,
+                        ])->schema([
+                            Forms\Components\Textarea::make('obs_exame_fisico')
+                                ->label('Observações do Exame Físico')
+                                ->autosize(),
+                            Forms\Components\Textarea::make('exame_fisico')
+                                ->label('Exame Físico Detalhado')
+                                ->autoSize(),
+                        ]),
                     ])
                     ->columnSpanFull(),
 
