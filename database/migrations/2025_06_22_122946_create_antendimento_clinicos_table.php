@@ -47,7 +47,7 @@ return new class extends Migration
             $table->string('glicemia', 10);
             $table->string('obs_exame_fisico', 255);
             $table->string('exame_fisico', 255);
-            $table->foreignId('hipotese_diagnostica_id');
+            $table->foreignId('hipotese_diagnostica');
             $table->string('hipotese_diagnostica_detalhes', 255);
             $table->json('prescricao_medicamentosa');
             $table->json('exames_solicitados');                   

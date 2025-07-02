@@ -17,6 +17,7 @@ use App\Models\Doenca;
 use Filament\Forms\Set;
 use App\Models\Medicamento;
 
+
 class AtendimentoClinicoResource extends Resource
 {
     protected static ?string $model = AtendimentoClinico::class;
@@ -438,10 +439,9 @@ class AtendimentoClinicoResource extends Resource
                         ])->schema([
                             Forms\Components\Textarea::make('obs_exame_fisico')
                                 ->label('Observações do Exame Físico')
+                                ->columnSpan(3)
                                 ->autosize(),
-                            Forms\Components\Textarea::make('exame_fisico')
-                                ->label('Exame Físico Detalhado')
-                                ->autoSize(),
+                            
                         ]),
                     ])
                     ->columnSpanFull(),
@@ -451,32 +451,86 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\Select::make('hipotese_diagnostica_id')
                             ->label('Hipótese Diagnóstica')
                             ->relationship('hipoteseDiagnostica', 'nome')
-                            ->searchable()
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
+                            ->required()
+                            ->searchable(['nome', 'cid'])
                             ->multiple(),
+
                         Forms\Components\Textarea::make('hipotese_diagnostica_detalhes')
                             ->label('Detalhes da Hipótese Diagnóstica')
-                            ->rows(2),
-                        Forms\Components\Textarea::make('prescricao_medicamentosa')
-                            ->label('Prescrição Medicamentosa')
-                            ->rows(2),
-                        Forms\Components\Textarea::make('exames_solicitados')
+                            ->autosize(),
+                        Forms\Components\Select::make('exames_id')
                             ->label('Exames Solicitados')
-                            ->rows(2),
-                        Forms\Components\Textarea::make('encaminhamentos')
+                            ->relationship('exames', 'nome')
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (' . $record->tipo . ')')
+                            ->required()
+                            ->searchable('nome')
+                            ->multiple()
+                            ->live()
+                            ->afterStateUpdated(function ($state, Set $set, $get) {
+                                // Recupera o valor atual do campo resultados_exames
+                                $valorAtual = $get('resultados_exames') ?? '';
+
+                                if (is_array($state) && count($state)) {
+                                    // Busca as descrições dos exames selecionados
+                                    $exames = \App\Models\Exame::whereIn('id', $state)->pluck('nome')->toArray();
+                                    // Junta as descrições em uma string, cada uma em uma linha precedida pelo nome do exame
+                                    $novasLinhas = [];
+                                    foreach ($exames as $nome => $descricao) {
+                                        $linha = trim($nome) . ': ' . trim($descricao);
+                                        $novasLinhas[] = $linha;
+                                    }
+
+                                    // Quebra o valor atual em linhas e remove espaços extras
+                                    $linhasExistentes = array_map('trim', explode("\n", $valorAtual));
+
+                                    // Adiciona apenas as linhas que ainda não existem (comparando até o ':')
+                                    foreach ($novasLinhas as $linha) {
+                                        $existe = false;
+                                        $parteLinha = strtolower(trim(strtok($linha, ':')));
+                                        foreach ($linhasExistentes as $existente) {
+                                            $parteExistente = strtolower(trim(strtok($existente, ':')));
+                                            if ($parteLinha === $parteExistente) {
+                                                $existe = true;
+                                                break;
+                                            }
+                                        }
+                                        if ($linha && !$existe) {
+                                            $linhasExistentes[] = $linha;
+                                        }
+                                    }
+
+                                    // Atualiza o campo com todas as linhas únicas
+                                    $set('resultados_exames', implode("\n", array_filter($linhasExistentes)));
+                                }
+                            }),
+                        Forms\Components\Textarea::make('resultados_exames')
+                            ->label('Resultados dos Exames')
+                            ->autosize(),
+                        Forms\Components\Select::make('prescricao_medicamentosa')
+                            ->label('Prescrição Medicamentosa')
+                            ->relationship('medicamentos', 'nome')
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (' . $record->principio_ativo . ')')
+                            ->required()
+                            ->searchable(['nome', 'principio_ativo'])
+                            ->multiple(),
+                        
+                        Forms\Components\Select::make('encaminhamentos')
                             ->label('Encaminhamentos')
-                            ->rows(2),
-                        Forms\Components\Textarea::make('orientacoes')
-                            ->label('Orientações')
-                            ->rows(2),
+                            ->relationship('encaminhamentos', 'nome')
+                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome)
+                            ->required()
+                            ->searchable('nome')
+                            ->multiple(),
+                        
                         Forms\Components\Textarea::make('evolucao')
                             ->label('Evolução')
-                            ->rows(2),
+                            ->autosize(),
+                        Forms\Components\Textarea::make('orientacoes')
+                            ->label('Demais Orientações')
+                            ->autosize(),
                     ])
                     ->columnSpanFull(),
-                Forms\Components\Textarea::make('observacoes')
-                    ->label('Observações')
-                    ->columnSpanFull(),
-
                 Forms\Components\Fieldset::make('Anexos')
                     ->schema([
                         Forms\Components\FileUpload::make('anexos_resultados')
