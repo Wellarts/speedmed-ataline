@@ -453,6 +453,7 @@ class AtendimentoClinicoResource extends Resource
                             ->relationship('hipoteseDiagnostica', 'nome')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
                             ->required()
+                            ->preload()
                             ->searchable(['nome', 'cid'])
                             ->multiple(),
 
@@ -464,6 +465,7 @@ class AtendimentoClinicoResource extends Resource
                             ->relationship('exames', 'nome')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (' . $record->tipo . ')')
                             ->required()
+                            ->preload()
                             ->searchable('nome')
                             ->multiple()
                             ->live()
@@ -507,19 +509,21 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\Textarea::make('resultados_exames')
                             ->label('Resultados dos Exames')
                             ->autosize(),
-                        Forms\Components\Select::make('prescricao_medicamentosa')
+                        Forms\Components\Select::make('medicamentos_id')
                             ->label('Prescrição Medicamentosa')
                             ->relationship('medicamentos', 'nome')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (' . $record->principio_ativo . ')')
                             ->required()
+                            ->preload()
                             ->searchable(['nome', 'principio_ativo'])
                             ->multiple(),
                         
-                        Forms\Components\Select::make('encaminhamentos')
+                        Forms\Components\Select::make('encaminhamentos_id')
                             ->label('Encaminhamentos')
                             ->relationship('encaminhamentos', 'nome')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome)
                             ->required()
+                            ->preload()
                             ->searchable('nome')
                             ->multiple(),
                         

@@ -43,12 +43,13 @@ class AtendimentoClinico extends Model
         'fr',
         'temperatura',
         'saturacao',
-        'exame_fisico',
+        'obs_exame_fisico',
         'hipotese_diagnostica_id',
         'hipotese_diagnostica_detalhes',
-        'prescricao_medicamentosa',
+        'medicamentos_id',
         'exames_id',
-        'encaminhamentos',
+        'resultados_exames',
+        'encaminhamentos_id',
         'orientacoes',
         'evolucao',
         'status',
@@ -58,11 +59,12 @@ class AtendimentoClinico extends Model
 
     protected $casts = [
         'data_hora_atendimento' => 'datetime',
-        'prescricao_medicamentosa' => 'json',
+        'medicamentos_id' => 'array',
         'exames_id' => 'array',
         'anexos_resultados' => 'json',
         'doenca_preexistente' => 'array',
         'hipotese_diagnostica_id' => 'array',
+        'encaminhamentos_id' => 'array',
         // 'hipotese_diagnostica_id' should not be cast to array or json
     ];  
     
@@ -111,7 +113,7 @@ class AtendimentoClinico extends Model
 
     public function exames()
     {
-        return $this->hasMany(Exame::class, 'exame_id');
+        return $this->belongsTo(Exame::class);
     }
 
     public function encaminhamentos()
