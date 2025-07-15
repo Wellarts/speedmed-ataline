@@ -47,6 +47,7 @@ class AtendimentoClinico extends Model
         'hipotese_diagnostica_id',
         'hipotese_diagnostica_detalhes',
         'medicamentos_id',
+        'medicamentos_detalhes',
         'exames_id',
         'resultados_exames',
         'encaminhamentos_id',
@@ -54,7 +55,7 @@ class AtendimentoClinico extends Model
         'evolucao',
         'status',
         'observacoes',
-        'anexos_resultados'
+        'anexos_resultados',
     ];
 
     protected $casts = [

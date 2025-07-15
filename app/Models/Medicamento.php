@@ -15,6 +15,7 @@ class Medicamento extends Model
         'principio_ativo',
         'alergia',
         'uso_continuo',
+        'controle_especial'
     ];
 
     protected $casts = [

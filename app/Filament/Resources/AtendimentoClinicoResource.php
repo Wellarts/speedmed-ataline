@@ -474,24 +474,24 @@ class AtendimentoClinicoResource extends Resource
                                 $valorAtual = $get('resultados_exames') ?? '';
 
                                 if (is_array($state) && count($state)) {
-                                    // Busca as descrições dos exames selecionados
-                                    $exames = \App\Models\Exame::whereIn('id', $state)->pluck('nome')->toArray();
-                                    // Junta as descrições em uma string, cada uma em uma linha precedida pelo nome do exame
+                                    // Busca os exames selecionados com nome e tipo
+                                    $exames = \App\Models\Exame::whereIn('id', $state)->get(['nome', 'tipo']);
+                                    // Junta nome e tipo em uma string, cada um em uma linha: "NOME (TIPO) -"
                                     $novasLinhas = [];
-                                    foreach ($exames as $nome => $descricao) {
-                                        $linha = trim($nome) . ': ' . trim($descricao);
+                                    foreach ($exames as $exame) {
+                                        $linha = trim($exame->nome) . ' (' . trim($exame->tipo) . ') - ';
                                         $novasLinhas[] = $linha;
                                     }
 
                                     // Quebra o valor atual em linhas e remove espaços extras
                                     $linhasExistentes = array_map('trim', explode("\n", $valorAtual));
 
-                                    // Adiciona apenas as linhas que ainda não existem (comparando até o ':')
+                                    // Adiciona apenas as linhas que ainda não existem (comparando até o " -")
                                     foreach ($novasLinhas as $linha) {
                                         $existe = false;
-                                        $parteLinha = strtolower(trim(strtok($linha, ':')));
+                                        $parteLinha = strtolower(trim(strtok($linha, '-')));
                                         foreach ($linhasExistentes as $existente) {
-                                            $parteExistente = strtolower(trim(strtok($existente, ':')));
+                                            $parteExistente = strtolower(trim(strtok($existente, '-')));
                                             if ($parteLinha === $parteExistente) {
                                                 $existe = true;
                                                 break;
@@ -513,10 +513,47 @@ class AtendimentoClinicoResource extends Resource
                             ->label('Prescrição Medicamentosa')
                             ->relationship('medicamentos', 'nome')
                             ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (' . $record->principio_ativo . ')')
+                            ->live()
+                            ->afterStateUpdated(function ($state, Set $set, $get) {
+                                // Recupera o valor atual do campo medicamentos_detalhes
+                                $valorAtual = $get('medicamentos_detalhes') ?? '';
+
+                                if (is_array($state) && count($state)) {
+                                    // Busca os nomes dos medicamentos selecionados
+                                    $medicamentos = \App\Models\Medicamento::whereIn('id', $state)->pluck('nome')->toArray();
+                                    // Junta os nomes em uma string, cada um em uma linha terminando com " -"
+                                    $novasLinhas = array_map(fn($nome) => trim($nome) . ' - ', $medicamentos);
+
+                                    // Quebra o valor atual em linhas e remove espaços extras
+                                    $linhasExistentes = array_map('trim', explode("\n", $valorAtual));
+
+                                    // Adiciona apenas as linhas que ainda não existem (comparando até o " -")
+                                    foreach ($novasLinhas as $linha) {
+                                        $existe = false;
+                                        $parteLinha = strtolower(trim(strtok($linha, '-')));
+                                        foreach ($linhasExistentes as $existente) {
+                                            $parteExistente = strtolower(trim(strtok($existente, '-')));
+                                            if ($parteLinha === $parteExistente) {
+                                                $existe = true;
+                                                break;
+                                            }
+                                        }
+                                        if ($linha && !$existe) {
+                                            $linhasExistentes[] = $linha;
+                                        }
+                                    }
+
+                                    // Atualiza o campo com todas as linhas únicas
+                                    $set('medicamentos_detalhes', implode("\n", array_filter($linhasExistentes)));
+                                }
+                            })
                             ->required()
                             ->preload()
                             ->searchable(['nome', 'principio_ativo'])
                             ->multiple(),
+                        Forms\Components\Textarea::make('medicamentos_detalhes')
+                            ->label('Detalhes da Medicação Prescrita')
+                            ->autosize(),
                         
                         Forms\Components\Select::make('encaminhamentos_id')
                             ->label('Encaminhamentos')

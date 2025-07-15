@@ -32,12 +32,12 @@ class MedicamentoResource extends Resource
                     ->label('Nome')
                     ->required()
                     ->maxLength(255)
-                    ->unique(ignoreRecord: true),
+                    ->helperText('Informe o nome do medicamento'),
                 Forms\Components\TextInput::make('principio_ativo')
                     ->label('Princípio Ativo')
                     ->required()
                     ->maxLength(255)
-                    ->unique(ignoreRecord: true),
+                    ->helperText('Informe o princípio ativo do medicamento'),                    
                 Forms\Components\Checkbox::make('alergia')
                     ->label('Alergia')
                     ->default(false)
@@ -46,6 +46,10 @@ class MedicamentoResource extends Resource
                     ->label('Uso Contínuo')
                     ->default(false)
                     ->helperText('Marque se o medicamento é usado continuamente'),
+                Forms\Components\Checkbox::make('controle_especial')
+                    ->label('Controle Especial')
+                    ->default(false)
+                    ->helperText('Marque se o medicamento é de controle especial'),
             ]);
     }
 
@@ -63,14 +67,20 @@ class MedicamentoResource extends Resource
                     ->sortable(),
                 Tables\Columns\BooleanColumn::make('alergia')
                     ->label('Alergia')
-                    ->trueIcon('heroicon-o-check')
-                    ->falseIcon('heroicon-o-x')
+                    ->alignCenter()
+                    ->trueIcon('heroicon-o-check')                    
                     ->sortable()
                     ->toggleable(),
                 Tables\Columns\BooleanColumn::make('uso_continuo')
                     ->label('Uso Contínuo')
-                    ->trueIcon('heroicon-o-check')
-                    ->falseIcon('heroicon-o-x')
+                    ->alignCenter()
+                    ->trueIcon('heroicon-o-check')                    
+                    ->sortable()
+                    ->toggleable(),
+                Tables\Columns\BooleanColumn::make('controle_especial')
+                    ->label('Controle Especial')
+                    ->alignCenter()
+                    ->trueIcon('heroicon-o-check')                   
                     ->sortable()
                     ->toggleable(),
                 
