@@ -16,7 +16,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Models\Doenca;
 use Filament\Forms\Set;
 use App\Models\Medicamento;
-
+use Filament\Notifications\Notification;
 
 class AtendimentoClinicoResource extends Resource
 {
@@ -38,7 +38,7 @@ class AtendimentoClinicoResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('medico_id')
                             ->label('Médico')
-                            ->relationship('medico', 'name')
+                            ->relationship('medico', 'nome')
                             ->default(auth()->user()->id)   
                             ->searchable()
                             ->required(),
@@ -49,6 +49,29 @@ class AtendimentoClinicoResource extends Resource
                             ->preload()
                             ->searchable()
                             ->required()
+                            ->live()
+                            ->afterStateUpdated(function ($state, Set $set, $get) {
+                                $paciente = $get('paciente_id');
+                                $set('paciente', $paciente);
+                                
+                                $ultimoAtendimento = AtendimentoClinico::where('paciente_id', $paciente)
+                                    ->orderBy('created_at', 'desc')
+                                    ->first();
+                                
+                                if ($ultimoAtendimento) {
+                                    Notification::make()
+                                        ->title('Último atendimento')
+                                        ->body('<b>Data</b>: ' . $ultimoAtendimento->data_hora_atendimento->format('d/m/Y') .'<br>
+                                        <b>Queixa principal</b>: ' . $ultimoAtendimento->qp.'<br>
+                                        <br><b>História Clínica</b>: ' . $ultimoAtendimento->hdp .'<br>'                                        
+                                        
+                                        
+                                        )
+                                        ->info()
+                                        ->persistent()
+                                        ->send();
+                                }
+                            })                            
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('nome')
                                     ->required(true)
@@ -127,7 +150,7 @@ class AtendimentoClinicoResource extends Resource
                             ->label('Status do Atendimento')
                             ->inline()
                             ->options([
-                                '1' => 'Aberta',
+                                '1' => 'Iniciada',
                                 '2' => 'Finalizada',
                                 '0' => 'Cancelada',
                             ])
@@ -596,9 +619,20 @@ class AtendimentoClinicoResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->formatStateUsing(fn ($state) => match ($state) {
-                        '1' => 'Aberta',
+                        '1' => 'Iniciada',
                         '2' => 'Finalizada',
                         '0' => 'Cancelada',
+                    })
+                    ->badge()
+                    ->colors([
+                        '1' => 'warning',
+                        '2' => 'success',
+                        '0' => 'danger',
+                    ])
+                    ->icon(fn ($state) => match ($state) {
+                        '1' => 'heroicon-o-check-circle',
+                        '2' => 'heroicon-o-x-circle',
+                        '0' => 'heroicon-o-exclamation-circle',
                     })
                     ->sortable()
                     ->searchable()
@@ -610,6 +644,16 @@ class AtendimentoClinicoResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('Prontuário')
+                        ->icon('heroicon-o-document-text')
+                        ->url(fn (AtendimentoClinico $record) => route('documentos.prontuario', $record))
+                        ->openUrlInNewTab(),
+                Tables\Actions\Action::make('receituario') 
+                        ->icon('heroicon-o-document-text')
+                        ->url(fn (AtendimentoClinico $record) => route('documentos.receituarioComum', $record))
+                        ->openUrlInNewTab(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

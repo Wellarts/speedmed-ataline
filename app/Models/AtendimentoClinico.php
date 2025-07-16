@@ -22,7 +22,6 @@ class AtendimentoClinico extends Model
         'data_inicio_sintomas',
         'cirurgias_hospitalizacoes',
         'medicamento_alergias_id',
-        'alimento_alergias',
         'outros_alergias',
         'medicamento_uso_id',
         'medicamento_uso_detalhes',
@@ -54,7 +53,6 @@ class AtendimentoClinico extends Model
         'orientacoes',
         'evolucao',
         'status',
-        'observacoes',
         'anexos_resultados',
     ];
 
@@ -74,15 +72,10 @@ class AtendimentoClinico extends Model
         return $this->belongsTo(Paciente::class);
     }
 
-    public function medico()
-    {
-        return $this->belongsTo(User::class);
-    }
-
+    
     public function doenca()
     {
-        return $this->belongsToMany(Doenca::class)
-            ->withPivot('data_inicio'); // Adiciona o campo extra 'texto' da tabela pivô
+        return $this->belongsToMany(Doenca::class);
             
     }
 
@@ -125,6 +118,11 @@ class AtendimentoClinico extends Model
     public function medicamentos()
     {
         return $this->belongsTo(Medicamento::class);
+    }
+
+    public function medico() 
+    {
+        return $this->belongsTo(Medico::class);
     }
 
 }
