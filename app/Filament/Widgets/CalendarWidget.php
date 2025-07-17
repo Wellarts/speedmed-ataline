@@ -11,8 +11,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\Filament\Resources\AgendamentoResource;
 use Filament\Forms; // Add this import for Forms components
 use App\Models\Agendamento;
+use Carbon\Carbon;
 use Filament\Forms\Form;
-
+use Filament\Forms\Set;
 
 class CalendarWidget extends FullCalendarWidget
 {
@@ -71,6 +72,14 @@ class CalendarWidget extends FullCalendarWidget
                     Forms\Components\DateTimePicker::make('data_hora_inicio')
                         ->label('Início')
                         ->seconds(false)
+                        ->live(onBlur: true)
+                        ->afterStateUpdated(
+                            function (Set $set, $state) {
+                                if ($state) {
+                                    $set('data_hora_fim', Carbon::parse($state)->addMinutes(30)->format('Y-m-d H:i'));
+                                }
+                            }
+                        )
                         ->columnSpan([
                             'default' => 12,
                             'sm' => 12,
@@ -81,6 +90,7 @@ class CalendarWidget extends FullCalendarWidget
                     Forms\Components\DateTimePicker::make('data_hora_fim')
                         ->label('Fim')
                         ->seconds(false)
+                         ->displayFormat('d/m/Y H:i')
                         ->columnSpan([
                             'default' => 12,
                             'sm' => 12,
