@@ -57,8 +57,7 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugin(
                 FilamentFullCalendarPlugin::make()
-                      ->editable(true)
-                       ->timezone('local')
+                      ->editable(true)               
                        ->selectable()
                        ->config([
                         'headerToolbar' => [
