@@ -59,6 +59,7 @@ class AdminPanelProvider extends PanelProvider
                 FilamentFullCalendarPlugin::make()
                       ->editable(true)
                        ->timezone('local')
+                       ->selectable()
                        ->config([
                         'headerToolbar' => [
                             'left' => 'prev,next today',

@@ -1,32 +1,32 @@
 <?php
 
 namespace App\Filament\Widgets;
- 
+
 use Saade\FilamentFullCalendar\Widgets\FullCalendarWidget;
 use Saade\FilamentFullCalendar\Actions\CreateAction;
 use Saade\FilamentFullCalendar\Actions\EditAction;
 use Saade\FilamentFullCalendar\Actions\DeleteAction;
 use App\Filament\Resources\EventResource;
-use Illuminate\Database\Eloquent\Model; 
+use Illuminate\Database\Eloquent\Model;
 use App\Filament\Resources\AgendamentoResource;
 use Filament\Forms; // Add this import for Forms components
 use App\Models\Agendamento;
 use Filament\Forms\Form;
 
- 
+
 class CalendarWidget extends FullCalendarWidget
 {
     public Model | string | null $model = Agendamento::class;
 
     public function fetchEvents(array $fetchInfo): array
     {
-        
+
         return Agendamento::query()
             ->where('data_hora_inicio', '>=', $fetchInfo['start'])
             ->where('data_hora_fim', '<=', $fetchInfo['end'])
             ->get()
             ->map(
-                fn (Agendamento $event) => [
+                fn(Agendamento $event) => [
                     'id' => $event->id,
                     'title' => $event->paciente,
                     'start' => $event->data_hora_inicio,
@@ -38,8 +38,8 @@ class CalendarWidget extends FullCalendarWidget
             ->toArray();
     }
 
-    
- 
+
+
     public function getFormSchema(): array
     {
         return [
@@ -54,17 +54,17 @@ class CalendarWidget extends FullCalendarWidget
                         ->columnSpan(6),
                     Forms\Components\DateTimePicker::make('data_hora_inicio')
                         ->label('Início')
-                         ->seconds(false)
+                        ->seconds(false)
                         ->columnSpan(6),
                     Forms\Components\DateTimePicker::make('data_hora_fim')
                         ->label('Fim')
-                         ->seconds(false)
+                        ->seconds(false)
                         ->columnSpan(6),
                     Forms\Components\Select::make('medico_id')
                         ->label('Médico')
                         ->relationship('medico', 'name')
                         ->default(
-                            fn ($query) => $query->where('name', 'Ataline Barbosa')->first()?->id
+                            fn($query) => $query->where('name', 'Ataline Barbosa')->first()?->id
                         )
                         ->required()
                         ->columnSpan(6),
@@ -75,7 +75,7 @@ class CalendarWidget extends FullCalendarWidget
                             'confirmado' => 'Confirmado',
                             'cancelado' => 'Cancelado',
                         ])
-                        ->default(fn ($state) => $state ?? 'agendado')
+                        ->default(fn($state) => $state ?? 'agendado')
                         ->columnSpan(6),
                     Forms\Components\Textarea::make('observacoes')
                         ->label('Observações')
@@ -86,52 +86,51 @@ class CalendarWidget extends FullCalendarWidget
     }
 
     protected function headerActions(): array
- {
-     return [
-         CreateAction::make()
-             ->mountUsing(
-                 function (Forms\Form $form, array $arguments) {
-                     $form->fill([
-                         'data_hora_inicio' => $arguments['start'] ?? null,
-                         'data_hora_fim' => $arguments['end'] ?? null
-                     ]);
-                 }
-             )
-             ->label('Novo Agendamento')
-             ->icon('heroicon-o-plus')
-             ->color('primary'),
-     ];
- }
+    {
+        return [
+            CreateAction::make()
+                ->mountUsing(
+                    function (Form $form, array $arguments) {
+                        $form->fill([
+                            'data_hora_inicio' => $arguments['start'] ?? null,
+                            'data_hora_fim' => $arguments['end'] ?? null
+                        ]);
+                    }
+                )
+                ->label('Novo Agendamento')
+                ->icon('heroicon-o-plus')
+                ->color('primary'),
+        ];
+    }
 
- protected function modalActions(): array
- {
-     return [
-         EditAction::make()
-             ->mountUsing(
-                 function (Agendamento $record, Form $form, array $arguments) {
-                     $form->fill([
-                         'paciente' => $record->paciente,
-                         'data_hora_inicio' => $arguments['event']['start'] ?? $record->data_hora_inicio,
-                         'data_hora_fim' => $arguments['event']['end'] ?? $record->data_hora_fim,
-                         'medico_id' => $record->medico_id,
-                         'contato' => $record->contato,
-                         'status' => $record->status,
-                         'observacoes' => $record->observacoes,
-                     ]);
-                 }
-             ),
-         
-     ];
- }
+    protected function modalActions(): array
+    {
+        return [
+            EditAction::make()
+                ->mountUsing(
+                    function (Agendamento $record, Form $form, array $arguments) {
+                        $form->fill([
+                            'paciente' => $record->paciente,
+                            'data_hora_inicio' => $arguments['event']['start'] ?? $record->data_hora_inicio,
+                            'data_hora_fim' => $arguments['event']['end'] ?? $record->data_hora_fim,
+                            'medico_id' => $record->medico_id,
+                            'contato' => $record->contato,
+                            'status' => $record->status,
+                            'observacoes' => $record->observacoes,
+                        ]);
+                    }
+                ),
 
- public function eventDidMount(): string
-{
-    return <<<JS
+        ];
+    }
+
+    public function eventDidMount(): string
+    {
+        return <<<JS
         function({ event, timeText, isStart, isEnd, isMirror, isPast, isFuture, isToday, el, view }){
             el.setAttribute("x-tooltip", "tooltip");
             el.setAttribute("x-data", "{ tooltip: '"+event.title+"' }");
         }
     JS;
+    }
 }
-}
-
