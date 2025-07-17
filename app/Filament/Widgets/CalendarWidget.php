@@ -38,28 +38,56 @@ class CalendarWidget extends FullCalendarWidget
             ->toArray();
     }
 
-
-
     public function getFormSchema(): array
     {
         return [
-            Forms\Components\Grid::make(12)
+            Forms\Components\Grid::make([
+                    'default' => 12,
+                    'sm' => 12,
+                    'md' => 12,
+                    'lg' => 12,
+                    'xl' => 12,
+                ])
                 ->schema([
                     Forms\Components\TextInput::make('paciente')
                         ->label('Paciente')
-                        ->columnSpan(6),
+                        ->columnSpan([
+                            'default' => 12,
+                            'sm' => 12,
+                            'md' => 6,
+                            'lg' => 6,
+                            'xl' => 6,
+                        ]),
                     Forms\Components\TextInput::make('contato')
                         ->label('Contato')
                         ->mask('(99) 99999-9999')
-                        ->columnSpan(6),
+                        ->columnSpan([
+                            'default' => 12,
+                            'sm' => 12,
+                            'md' => 6,
+                            'lg' => 6,
+                            'xl' => 6,
+                        ]),
                     Forms\Components\DateTimePicker::make('data_hora_inicio')
                         ->label('Início')
                         ->seconds(false)
-                        ->columnSpan(6),
+                        ->columnSpan([
+                            'default' => 12,
+                            'sm' => 12,
+                            'md' => 6,
+                            'lg' => 6,
+                            'xl' => 6,
+                        ]),
                     Forms\Components\DateTimePicker::make('data_hora_fim')
                         ->label('Fim')
                         ->seconds(false)
-                        ->columnSpan(6),
+                        ->columnSpan([
+                            'default' => 12,
+                            'sm' => 12,
+                            'md' => 6,
+                            'lg' => 6,
+                            'xl' => 6,
+                        ]),
                     Forms\Components\Select::make('medico_id')
                         ->label('Médico')
                         ->relationship('medico', 'name')
@@ -67,20 +95,42 @@ class CalendarWidget extends FullCalendarWidget
                             fn($query) => $query->where('name', 'Ataline Barbosa')->first()?->id
                         )
                         ->required()
-                        ->columnSpan(6),
-                    Forms\Components\Select::make('status')
-                        ->label('Status')
-                        ->options([
-                            'agendado' => 'Agendado',
-                            'confirmado' => 'Confirmado',
-                            'cancelado' => 'Cancelado',
-                        ])
-                        ->default(fn($state) => $state ?? 'agendado')
-                        ->columnSpan(6),
+                        ->columnSpan([
+                            'default' => 12,
+                            'sm' => 12,
+                            'md' => 6,
+                            'lg' => 6,
+                            'xl' => 6,
+                        ]),
                     Forms\Components\Textarea::make('observacoes')
                         ->label('Observações')
                         ->autosize()
                         ->columnSpan(12),
+                    Forms\Components\ToggleButtons::make('status')
+                            ->hidden(fn($context) => $context === 'create')
+                            ->label('Status do Atendimento')
+                            ->inline()
+                            ->options([
+                                '1' => 'Agendado',
+                                '2' => 'Agendamento Confirmado',
+                                '3' => 'Agendamento Realizado',
+                                '0' => 'Cancelada',
+                            ])
+                            ->icons([
+                                '1' => 'heroicon-o-calendar',
+                                '2' => 'heroicon-o-check-circle',
+                                '3' => 'heroicon-o-check',
+                                '0' => 'heroicon-o-x-circle',
+                            ])
+                            ->colors([
+                                '1' => 'primary',
+                                '2' => 'info',
+                                '3' => 'success',
+                                '0' => 'danger',
+                            ])
+                            ->default('1')
+                            ->columnSpanFull()
+                            ->required(false),
                 ]),
         ];
     }
@@ -120,7 +170,8 @@ class CalendarWidget extends FullCalendarWidget
                         ]);
                     }
                 ),
-
+            DeleteAction::make(),
+                
         ];
     }
 
