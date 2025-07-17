@@ -28,10 +28,18 @@ class CalendarWidget extends FullCalendarWidget
             ->get()
             ->map(
                 fn(Agendamento $event) => [
+                   // dd($event),
                     'id' => $event->id,
                     'title' => $event->paciente,
                     'start' => $event->data_hora_inicio,
                     'end' => $event->data_hora_fim,
+                    'color' => match ($event->status) {
+                        '1' => 'yellow',
+                        '2' => 'green',
+                        '0' => 'red',
+                        '3' => 'blue',
+                        default => '#000000',
+                    },
                     // 'url' => AgendamentoResource::getUrl('view', ['record' => $event]),
                     // 'shouldOpenUrlInNewTab' => true
                 ]
@@ -43,12 +51,12 @@ class CalendarWidget extends FullCalendarWidget
     {
         return [
             Forms\Components\Grid::make([
-                    'default' => 12,
-                    'sm' => 12,
-                    'md' => 12,
-                    'lg' => 12,
-                    'xl' => 12,
-                ])
+                'default' => 12,
+                'sm' => 12,
+                'md' => 12,
+                'lg' => 12,
+                'xl' => 12,
+            ])
                 ->schema([
                     Forms\Components\TextInput::make('paciente')
                         ->label('Paciente')
@@ -90,7 +98,7 @@ class CalendarWidget extends FullCalendarWidget
                     Forms\Components\DateTimePicker::make('data_hora_fim')
                         ->label('Fim')
                         ->seconds(false)
-                         ->displayFormat('d/m/Y H:i')
+                        ->displayFormat('d/m/Y H:i')
                         ->columnSpan([
                             'default' => 12,
                             'sm' => 12,
@@ -117,30 +125,30 @@ class CalendarWidget extends FullCalendarWidget
                         ->autosize()
                         ->columnSpan(12),
                     Forms\Components\ToggleButtons::make('status')
-                            ->hidden(fn($context) => $context === 'create')
-                            ->label('Status do Atendimento')
-                            ->inline()
-                            ->options([
-                                '1' => 'Agendado',
-                                '2' => 'Agendamento Confirmado',
-                                '3' => 'Agendamento Realizado',
-                                '0' => 'Cancelada',
-                            ])
-                            ->icons([
-                                '1' => 'heroicon-o-calendar',
-                                '2' => 'heroicon-o-check-circle',
-                                '3' => 'heroicon-o-check',
-                                '0' => 'heroicon-o-x-circle',
-                            ])
-                            ->colors([
-                                '1' => 'primary',
-                                '2' => 'info',
-                                '3' => 'success',
-                                '0' => 'danger',
-                            ])
-                            ->default('1')
-                            ->columnSpanFull()
-                            ->required(false),
+                        ->hidden(fn($context) => $context === 'create')
+                        ->label('Status do Atendimento')
+                        ->inline()
+                        ->options([
+                            '1' => 'Agendado',
+                            '2' => 'Confirmado',
+                            '3' => 'Realizado',
+                            '0' => 'Cancelada',
+                        ])
+                        ->icons([
+                            '1' => 'heroicon-o-calendar',
+                            '2' => 'heroicon-o-check-circle',
+                            '3' => 'heroicon-o-check',
+                            '0' => 'heroicon-o-x-circle',
+                        ])
+                        ->colors([
+                            '1' => 'primary',
+                            '2' => 'success',
+                            '3' => 'info',
+                            '0' => 'danger',
+                        ])
+                        ->default('1')
+                        ->columnSpanFull()
+                        ->required(false),
                 ]),
         ];
     }
@@ -181,7 +189,7 @@ class CalendarWidget extends FullCalendarWidget
                     }
                 ),
             DeleteAction::make(),
-                
+
         ];
     }
 
@@ -190,7 +198,7 @@ class CalendarWidget extends FullCalendarWidget
         return <<<JS
         function({ event, timeText, isStart, isEnd, isMirror, isPast, isFuture, isToday, el, view }){
             el.setAttribute("x-tooltip", "tooltip");
-            el.setAttribute("x-data", "{ tooltip: '"+event.title+"' }");
+            el.setAttribute("x-data", "{ tooltip: '"+event.title+" - "+event.start+"' }");
         }
     JS;
     }
