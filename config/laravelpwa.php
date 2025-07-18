@@ -7,7 +7,7 @@ return [
         'short_name' => 'SpeedMed',
         'start_url' => '/',
         'background_color' => '#050505',
-        'theme_color' => '#ffbf00',
+        'theme_color' => '#04c6c6ff',
         'display' => 'standalone',
         'orientation'=> 'any',
         'status_bar'=> 'black',
