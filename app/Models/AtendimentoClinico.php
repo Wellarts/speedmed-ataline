@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class AtendimentoClinico extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity;
 
     protected $table = 'atendimento_clinicos';
 
@@ -124,5 +126,12 @@ class AtendimentoClinico extends Model
     {
         return $this->belongsTo(Medico::class);
     }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['*']);
+        // Chain fluent methods for configuration options
+    }    
 
 }

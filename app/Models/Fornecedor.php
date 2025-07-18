@@ -9,7 +9,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class Fornecedor extends Model
 {
-    use HasFactory; //LogsActivity;
+    use HasFactory, LogsActivity;
 
         protected $fillable = [
         'nome',
@@ -38,12 +38,12 @@ class Fornecedor extends Model
         return $this->hasMany(ContasPagar::class);
     }
 
-    // public function getActivitylogOptions(): LogOptions
-    // {
-    //     return LogOptions::defaults()
-    //     ->logOnly(['*']);
-    //     // Chain fluent methods for configuration options
-    // }
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['*']);
+        // Chain fluent methods for configuration options
+    }
         
     
 

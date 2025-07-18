@@ -9,7 +9,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class FluxoCaixa extends Model
 {
-    use HasFactory; //LogsActivity;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'valor',
@@ -18,10 +18,10 @@ class FluxoCaixa extends Model
        
     ];
 
-    // public function getActivitylogOptions(): LogOptions
-    // {
-    //     return LogOptions::defaults()
-    //     ->logOnly(['*']);
-    //     // Chain fluent methods for configuration options
-    // }
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['*']);
+        // Chain fluent methods for configuration options
+    }
 }

@@ -9,7 +9,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 
 class ContasReceber extends Model
 {
-    use HasFactory;// LogsActivity;
+    use HasFactory, LogsActivity;
 
     protected $fillable = [
         'paciente_id',
@@ -36,11 +36,11 @@ class ContasReceber extends Model
         return $this->belongsTo(Categoria::class);
     }
 
-    // public function getActivitylogOptions(): LogOptions
-    // {
-    //     return LogOptions::defaults()
-    //     ->logOnly(['*']);
-    //     // Chain fluent methods for configuration options
-    // }
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+        ->logOnly(['*']);
+        // Chain fluent methods for configuration options
+    }
     
 }

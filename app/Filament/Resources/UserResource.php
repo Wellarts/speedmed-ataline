@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\Hash;
 
 class UserResource extends Resource
 {
@@ -40,16 +41,16 @@ class UserResource extends Resource
                     ->maxLength(255),
 
                 Forms\Components\TextInput::make('password')
-                    ->label('Senha')
                     ->password()
-                    ->required()
-                    ->minLength(8)
-                    ->maxLength(255)
-                    ->dehydrateStateUsing(fn ($state) => bcrypt($state))
-                    ->visible(fn ($livewire) => $livewire instanceof Pages\ManageUsers),
+                    ->dehydrateStateUsing(fn($state) => Hash::make($state))
+                    ->dehydrated(fn($state) => filled($state))
+                    ->required(fn(string $context): bool => $context === 'create'),
+                Forms\Components\Select::make('roles')
+                    ->label('Função')
+                    ->multiple()
+                    ->preload()
+                    ->relationship('roles', 'name'),
             ]);
-                          
-           
     }
 
     public static function table(Table $table): Table
@@ -59,9 +60,11 @@ class UserResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nome')
                     ->searchable(),
-                    Tables\Columns\TextColumn::make('email')
+                Tables\Columns\TextColumn::make('email')
                     ->label('Email')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('roles.name')
+                    ->label('Função')
 
             ])
             ->filters([

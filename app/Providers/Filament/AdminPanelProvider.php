@@ -10,12 +10,14 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 
@@ -55,6 +57,12 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                   function (): string {
+                      return Blade::render('@laravelPWA');
+                   }
+              )
             ->plugin(
                 FilamentFullCalendarPlugin::make()
                       ->editable(true)               
@@ -67,7 +75,10 @@ class AdminPanelProvider extends PanelProvider
                         ],
                         
                      ])
-            );
+            )
+            ->resources([
+            config('filament-logger.activity_resource')
+        ]);
     }
 
     

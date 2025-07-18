@@ -17,6 +17,8 @@ use App\Models\Doenca;
 use Filament\Forms\Set;
 use App\Models\Medicamento;
 use Filament\Notifications\Notification;
+use Filament\Tables\Filters\SelectFilter;
+
 
 class AtendimentoClinicoResource extends Resource
 {
@@ -615,20 +617,22 @@ class AtendimentoClinicoResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('data_hora_atendimento')
                     ->label('Data/Hora do Atendimento')
+                    ->alignCenter()
                     ->dateTime('d/m/Y H:i'),
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
+                    ->alignCenter()
                     ->formatStateUsing(fn ($state) => match ($state) {
                         '1' => 'Iniciada',
                         '2' => 'Finalizada',
                         '0' => 'Cancelada',
                     })
                     ->badge()
-                    ->colors([
+                    ->color(fn ($state) => match ($state) {
                         '1' => 'warning',
                         '2' => 'success',
                         '0' => 'danger',
-                    ])
+                    })
                     ->icon(fn ($state) => match ($state) {
                         '1' => 'heroicon-o-check-circle',
                         '2' => 'heroicon-o-x-circle',
@@ -639,7 +643,16 @@ class AtendimentoClinicoResource extends Resource
                     
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        '1' => 'Iniciada',
+                        '2' => 'Finalizada',
+                        '0' => 'Cancelada',
+                    ])
+                    ->label('Status'),
+                SelectFilter::make('paciente_id')
+                    ->relationship('paciente', 'nome')
+                    ->label('Paciente'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
