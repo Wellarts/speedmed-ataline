@@ -13,9 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/', function () { return redirect('/admin'); })->name('login');
+
 
 Route::get('/documentos/prontuario/{id}', [App\Http\Controllers\DocumentosController::class, 'prontuario'])->name('documentos.prontuario');
 Route::get('/documentos/receituario/{id}', [App\Http\Controllers\DocumentosController::class, 'receituarioComum'])->name('documentos.receituarioComum');
