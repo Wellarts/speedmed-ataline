@@ -601,6 +601,7 @@ class AtendimentoClinicoResource extends Resource
                     ->schema([
                         Forms\Components\FileUpload::make('anexos_resultados')
                             ->label('Anexos/Resultados')
+                            ->directory('atendimentos/anexos')
                             ->multiple(),
                     ])
                     ->columnSpanFull(),
