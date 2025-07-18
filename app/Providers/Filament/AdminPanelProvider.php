@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Saade\FilamentFullCalendar\FilamentFullCalendarPlugin;
 
+
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -70,7 +71,7 @@ class AdminPanelProvider extends PanelProvider
                    }
               )
             ->plugin(
-                FilamentErrorMailerPlugin::make(),
+       
                 FilamentFullCalendarPlugin::make()
                       ->editable(true)               
                        ->selectable()
@@ -81,7 +82,8 @@ class AdminPanelProvider extends PanelProvider
                             'right' => 'dayGridMonth,timeGridWeek,timeGridDay,listWeek',
                         ],
                         
-                     ])
+                    ]),
+                    FilamentErrorMailerPlugin::make()
             )
             ->resources([
             config('filament-logger.activity_resource')

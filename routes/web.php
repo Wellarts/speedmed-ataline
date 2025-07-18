@@ -22,3 +22,4 @@ Route::get('/', function () { return redirect('/admin'); })->name('login');
 
 Route::get('/documentos/prontuario/{id}', [App\Http\Controllers\DocumentosController::class, 'prontuario'])->name('documentos.prontuario');
 Route::get('/documentos/receituario/{id}', [App\Http\Controllers\DocumentosController::class, 'receituarioComum'])->name('documentos.receituarioComum');
+Route::get('/documentos/receituario_especial/{id}', [App\Http\Controllers\DocumentosController::class, 'receituarioEspecial'])->name('documentos.receituarioEspecial');

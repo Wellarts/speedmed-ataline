@@ -12,7 +12,7 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
             background: #fff;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
             border-radius: 8px;
@@ -24,18 +24,18 @@
             border-bottom: 2px solid #eee;
         }
         .section {
-            margin-bottom: 25px;
-            padding: 15px;
+            margin-bottom: 10px;
+            padding: 0px;
             background: #f9f9f9;
             border-radius: 5px;
         }
         .fields-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 20px;
+            gap: 5px;
         }
         .field {
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
         .label {
             font-weight: bold;
@@ -270,7 +270,7 @@
 
         <div class="section">
             <h2>Conduta</h2>
-            <div class="fields-grid" style="grid-template-columns: repeat(2, 1fr);">
+            <div class="fields-grid" style="grid-template-columns: repeat(3, 1fr);">
             <div class="field">
                 <span class="label">Medicamentos:</span>
                 <span class="value">
@@ -282,6 +282,10 @@
             <div class="field">
                 <span class="label">Detalhes Medicamentos:</span>
                 <span class="value">{{ $prontuario->medicamentos_detalhes }}</span>
+            </div>
+             <div class="field">
+                <span class="label">Detalhes Medicamentos - Especial:</span>
+                <span class="value">{{ $prontuario->medicamentos_detalhes_especial }}</span>
             </div>
             <div class="field">
                 <span class="label">Exames Solicitados:</span>

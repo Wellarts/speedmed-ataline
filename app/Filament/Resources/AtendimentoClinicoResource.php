@@ -28,7 +28,7 @@ class AtendimentoClinicoResource extends Resource
 
     protected static ?string $navigationGroup = 'Atendimentos';
 
-    protected static ?string $navigationLabel = 'Atendimentos Clínicos';
+    protected static ?string $navigationLabel = 'Atendimentos Clínico';
 
     protected static string $modalWidth = 'full';
 
@@ -41,10 +41,10 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\Select::make('medico_id')
                             ->label('Médico')
                             ->relationship('medico', 'nome')
-                            ->default(auth()->user()->id)   
+                            ->default(auth()->user()->id)
                             ->searchable()
                             ->required(),
-                        
+
                         Forms\Components\Select::make('paciente_id')
                             ->label('Paciente')
                             ->relationship('paciente', 'nome')
@@ -55,25 +55,26 @@ class AtendimentoClinicoResource extends Resource
                             ->afterStateUpdated(function ($state, Set $set, $get) {
                                 $paciente = $get('paciente_id');
                                 $set('paciente', $paciente);
-                                
+
                                 $ultimoAtendimento = AtendimentoClinico::where('paciente_id', $paciente)
                                     ->orderBy('created_at', 'desc')
                                     ->first();
-                                
+
                                 if ($ultimoAtendimento) {
                                     Notification::make()
                                         ->title('Último atendimento')
-                                        ->body('<b>Data</b>: ' . $ultimoAtendimento->data_hora_atendimento->format('d/m/Y') .'<br>
-                                        <b>Queixa principal</b>: ' . $ultimoAtendimento->qp.'<br>
-                                        <br><b>História Clínica</b>: ' . $ultimoAtendimento->hdp .'<br>'                                        
-                                        
-                                        
+                                        ->body(
+                                            '<b>Data</b>: ' . $ultimoAtendimento->data_hora_atendimento->format('d/m/Y') . '<br>
+                                        <b>Queixa principal</b>: ' . $ultimoAtendimento->qp . '<br>
+                                        <br><b>História Clínica</b>: ' . $ultimoAtendimento->hdp . '<br>'
+
+
                                         )
                                         ->info()
                                         ->persistent()
                                         ->send();
                                 }
-                            })                            
+                            })
                             ->createOptionForm([
                                 Forms\Components\TextInput::make('nome')
                                     ->required(true)
@@ -178,11 +179,11 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\Textarea::make('hdp')
                             ->label('História da Doença Atual')
                             ->autosize(),
-                        
+
                         Forms\Components\CheckboxList::make('doencas_preexistentes')
                             ->label('Doenças Preexistentes')
                             ->relationship('doenca', 'nome', fn($query) => $query->where('grave', 1))
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->nome . ' (CID: ' . $record->cid . ')')
                             ->live()
                             ->afterStateUpdated(function ($state, Set $set, $get) {
                                 // Recupera o valor atual do campo
@@ -218,11 +219,11 @@ class AtendimentoClinicoResource extends Resource
                                 }
                             }),
 
-                                      
-                                       
+
+
                         Forms\Components\TextArea::make('data_inicio_sintomas')
-                              ->autosize()     
-                              ->label('Data de Início dos Sintomas'),    
+                            ->autosize()
+                            ->label('Data de Início dos Sintomas'),
                         Forms\Components\Textarea::make('cirurgias_hospitalizacoes')
                             ->label('Cirurgias/Hospitalizações')
                             ->columnSpanFull(),
@@ -234,16 +235,16 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\CheckboxList::make('medicamento_alergia')
                             ->label('Alergia Medicamentosa')
                             ->relationship('medicamentoAlergias', 'nome', fn($query) => $query->where('alergia', 1))
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome)
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->nome)
                             ->searchable()
-                            ->columns(2), 
+                            ->columns(2),
                         Forms\Components\TextArea::make('outros_alergias')
                             ->autosize()
                             ->label('Outras Alergias'),
-                         Forms\Components\CheckboxList::make('medicamento_uso')
+                        Forms\Components\CheckboxList::make('medicamento_uso')
                             ->label('Medicamentos em Uso Contínuo')
                             ->relationship('medicamentoUso', 'nome', fn($query) => $query->where('uso_continuo', 1))
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome)
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->nome)
                             ->live()
                             ->afterStateUpdated(function ($state, Set $set, $get) {
                                 // Recupera o valor atual do campo
@@ -280,7 +281,7 @@ class AtendimentoClinicoResource extends Resource
                             })
 
                             ->searchable()
-                            ->columns(2), 
+                            ->columns(2),
                         Forms\Components\Textarea::make('medicamento_uso_detalhes')
                             ->label('Detalhes dos Medicamentos em Uso')
                             ->autosize(),
@@ -292,7 +293,7 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\CheckboxList::make('doencas_familiares')
                             ->label('Doenças em Famíliares')
                             ->relationship('doencaFamiliar', 'nome', fn($query) => $query->where('grave', 1))
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->nome . ' (CID: ' . $record->cid . ')')
                             ->live()
                             ->afterStateUpdated(function ($state, Set $set, $get) {
                                 // Recupera o valor atual do campo
@@ -328,10 +329,10 @@ class AtendimentoClinicoResource extends Resource
                                 }
                             })
                             ->searchable()
-                            ->columns(2),                      
+                            ->columns(2),
                         Forms\Components\TextArea::make('doenca_familiar_parentesco')
-                              ->autosize()   
-                              ->label('Doenças na Família e Parentesco'), 
+                            ->autosize()
+                            ->label('Doenças na Família e Parentesco'),
                     ])
                     ->columnSpanFull(),
 
@@ -370,7 +371,7 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\Textarea::make('obs_estilo_vida')
                             ->label('Observações sobre Estilo de Vida')
                             ->autosize(),
-                           // ->columnSpanFull(),
+                        // ->columnSpanFull(),
                     ])
                     ->columns([
                         'default' => 1,
@@ -378,7 +379,7 @@ class AtendimentoClinicoResource extends Resource
                         'md' => 2,
                         'lg' => 2,
                         'xl' => 2,
-                        '2xl' => 2,                    
+                        '2xl' => 2,
                     ])
                     ->columnSpanFull(),
 
@@ -450,7 +451,7 @@ class AtendimentoClinicoResource extends Resource
                                     return [];
                                 }),
                             Forms\Components\TextInput::make('fc')
-                                ->label('FC (bpm)'),                                
+                                ->label('FC (bpm)'),
                             Forms\Components\TextInput::make('fr')
                                 ->label('FR (/min)'),
                             Forms\Components\TextInput::make('temperatura')
@@ -466,7 +467,7 @@ class AtendimentoClinicoResource extends Resource
                                 ->label('Observações do Exame Físico')
                                 ->columnSpan(3)
                                 ->autosize(),
-                            
+
                         ]),
                     ])
                     ->columnSpanFull(),
@@ -476,7 +477,7 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\Select::make('hipotese_diagnostica_id')
                             ->label('Hipótese Diagnóstica')
                             ->relationship('hipoteseDiagnostica', 'nome')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (CID: ' . $record->cid . ')')
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->nome . ' (CID: ' . $record->cid . ')')
                             ->required()
                             ->preload()
                             ->searchable(['nome', 'cid'])
@@ -488,7 +489,7 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\Select::make('exames_id')
                             ->label('Exames Solicitados')
                             ->relationship('exames', 'nome')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (' . $record->tipo . ')')
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->nome . ' (' . $record->tipo . ')')
                             ->required()
                             ->preload()
                             ->searchable('nome')
@@ -537,26 +538,35 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\Select::make('medicamentos_id')
                             ->label('Prescrição Medicamentosa')
                             ->relationship('medicamentos', 'nome')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome . ' (' . $record->principio_ativo . ')')
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->nome . ' (' . $record->principio_ativo . ')')
                             ->live()
                             ->afterStateUpdated(function ($state, Set $set, $get) {
-                                // Recupera o valor atual do campo medicamentos_detalhes
-                                $valorAtual = $get('medicamentos_detalhes') ?? '';
+                                // Recupera o valor atual dos campos de detalhes
+                                $valorAtualNormal = $get('medicamentos_detalhes') ?? '';
+                                $valorAtualEspecial = $get('medicamentos_detalhes_especial') ?? '';
 
                                 if (is_array($state) && count($state)) {
-                                    // Busca os nomes dos medicamentos selecionados
-                                    $medicamentos = \App\Models\Medicamento::whereIn('id', $state)->pluck('nome')->toArray();
-                                    // Junta os nomes em uma string, cada um em uma linha terminando com " -"
-                                    $novasLinhas = array_map(fn($nome) => trim($nome) . ' - ', $medicamentos);
+                                    // Busca os medicamentos selecionados
+                                    $medicamentos = \App\Models\Medicamento::whereIn('id', $state)->get(['nome', 'controle_especial']);
+                                    
+                                    $novasLinhasNormal = [];
+                                    $novasLinhasEspecial = [];
+                                    
+                                    foreach ($medicamentos as $medicamento) {
+                                        $linha = trim($medicamento->nome) . ' - ';
+                                        if ($medicamento->controle_especial) {
+                                            $novasLinhasEspecial[] = $linha;
+                                        } else {
+                                            $novasLinhasNormal[] = $linha;
+                                        }
+                                    }
 
-                                    // Quebra o valor atual em linhas e remove espaços extras
-                                    $linhasExistentes = array_map('trim', explode("\n", $valorAtual));
-
-                                    // Adiciona apenas as linhas que ainda não existem (comparando até o " -")
-                                    foreach ($novasLinhas as $linha) {
+                                    // Processa medicamentos normais
+                                    $linhasExistentesNormal = array_map('trim', explode("\n", $valorAtualNormal));
+                                    foreach ($novasLinhasNormal as $linha) {
                                         $existe = false;
                                         $parteLinha = strtolower(trim(strtok($linha, '-')));
-                                        foreach ($linhasExistentes as $existente) {
+                                        foreach ($linhasExistentesNormal as $existente) {
                                             $parteExistente = strtolower(trim(strtok($existente, '-')));
                                             if ($parteLinha === $parteExistente) {
                                                 $existe = true;
@@ -564,31 +574,53 @@ class AtendimentoClinicoResource extends Resource
                                             }
                                         }
                                         if ($linha && !$existe) {
-                                            $linhasExistentes[] = $linha;
+                                            $linhasExistentesNormal[] = $linha;
                                         }
                                     }
 
-                                    // Atualiza o campo com todas as linhas únicas
-                                    $set('medicamentos_detalhes', implode("\n", array_filter($linhasExistentes)));
+                                    // Processa medicamentos especiais
+                                    $linhasExistentesEspecial = array_map('trim', explode("\n", $valorAtualEspecial));
+                                    foreach ($novasLinhasEspecial as $linha) {
+                                        $existe = false;
+                                        $parteLinha = strtolower(trim(strtok($linha, '-')));
+                                        foreach ($linhasExistentesEspecial as $existente) {
+                                            $parteExistente = strtolower(trim(strtok($existente, '-')));
+                                            if ($parteLinha === $parteExistente) {
+                                                $existe = true;
+                                                break;
+                                            }
+                                        }
+                                        if ($linha && !$existe) {
+                                            $linhasExistentesEspecial[] = $linha;
+                                        }
+                                    }
+
+                                    // Atualiza os campos com as linhas únicas
+                                    $set('medicamentos_detalhes', implode("\n", array_filter($linhasExistentesNormal)));
+                                    $set('medicamentos_detalhes_especial', implode("\n", array_filter($linhasExistentesEspecial)));
                                 }
                             })
                             ->required()
                             ->preload()
                             ->searchable(['nome', 'principio_ativo'])
+                            ->columnSpanFull()
                             ->multiple(),
                         Forms\Components\Textarea::make('medicamentos_detalhes')
                             ->label('Detalhes da Medicação Prescrita')
                             ->autosize(),
                         
+                        Forms\Components\Textarea::make('medicamentos_detalhes_especial')
+                            ->label('Detalhes da Medicação Prescrita - Especial')
+                            ->autosize(),
                         Forms\Components\Select::make('encaminhamentos_id')
                             ->label('Encaminhamentos')
                             ->relationship('encaminhamentos', 'nome')
-                            ->getOptionLabelFromRecordUsing(fn ($record) => $record->nome)
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->nome)
                             ->required()
                             ->preload()
                             ->searchable('nome')
                             ->multiple(),
-                        
+
                         Forms\Components\Textarea::make('evolucao')
                             ->label('Evolução')
                             ->autosize(),
@@ -623,25 +655,25 @@ class AtendimentoClinicoResource extends Resource
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status')
                     ->alignCenter()
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->formatStateUsing(fn($state) => match ($state) {
                         '1' => 'Iniciada',
                         '2' => 'Finalizada',
                         '0' => 'Cancelada',
                     })
                     ->badge()
-                    ->color(fn ($state) => match ($state) {
+                    ->color(fn($state) => match ($state) {
                         '1' => 'warning',
                         '2' => 'success',
                         '0' => 'danger',
                     })
-                    ->icon(fn ($state) => match ($state) {
+                    ->icon(fn($state) => match ($state) {
                         '1' => 'heroicon-o-check-circle',
                         '2' => 'heroicon-o-x-circle',
                         '0' => 'heroicon-o-exclamation-circle',
                     })
                     ->sortable()
                     ->searchable()
-                    
+
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
@@ -661,12 +693,20 @@ class AtendimentoClinicoResource extends Resource
                 Tables\Actions\ActionGroup::make([
                     Tables\Actions\Action::make('Prontuário')
                         ->icon('heroicon-o-document-text')
-                        ->url(fn (AtendimentoClinico $record) => route('documentos.prontuario', $record))
+                        ->url(fn(AtendimentoClinico $record) => route('documentos.prontuario', $record))
                         ->openUrlInNewTab(),
-                Tables\Actions\Action::make('receituario') 
+                    Tables\Actions\Action::make('receituarioComum')
+                        ->label('Receituário Comum')
                         ->icon('heroicon-o-document-text')
-                        ->url(fn (AtendimentoClinico $record) => route('documentos.receituarioComum', $record))
+                        ->url(fn(AtendimentoClinico $record) => route('documentos.receituarioComum', $record))
                         ->openUrlInNewTab(),
+                    Tables\Actions\Action::make('receituarioEspecial')
+                        ->label('Receituário Especial')
+                        ->icon('heroicon-o-document-text')
+                        ->url(fn(AtendimentoClinico $record) => route('documentos.receituarioEspecial', $record))
+                        ->openUrlInNewTab(),
+
+
                 ])
             ])
             ->bulkActions([
@@ -682,5 +722,4 @@ class AtendimentoClinicoResource extends Resource
             'index' => Pages\ManageAtendimentoClinicos::route('/'),
         ];
     }
-
-}   
+}

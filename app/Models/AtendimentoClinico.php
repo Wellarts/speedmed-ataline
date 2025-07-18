@@ -49,6 +49,7 @@ class AtendimentoClinico extends Model
         'hipotese_diagnostica_detalhes',
         'medicamentos_id',
         'medicamentos_detalhes',
+        'medicamentos_detalhes_especial',
         'exames_id',
         'resultados_exames',
         'encaminhamentos_id',

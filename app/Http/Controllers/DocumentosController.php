@@ -82,4 +82,20 @@ class DocumentosController extends Controller
                 ->setOption('isRemoteEnabled', true);
             return $pdf->stream('receituario_comum.pdf', ['Attachment' => false]);
     }
+
+    public function receituarioEspecial($id)
+    {
+        $prescricaoEspecial = AtendimentoClinico::find($id);
+        if (!$prescricaoEspecial) {
+            abort(404);
+        }        
+        
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.receituario_especial', compact('prescricaoEspecial'))
+                ->setPaper('a4', 'portrait')
+                ->setOption('isHtml5ParserEnabled', true)
+                ->setOption('isPhpEnabled', true)
+                ->setOption('isRemoteEnabled', true);
+            return $pdf->stream('receituario_especial.pdf', ['Attachment' => false]);
+    }
 }
