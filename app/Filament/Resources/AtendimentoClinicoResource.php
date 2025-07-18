@@ -65,8 +65,13 @@ class AtendimentoClinicoResource extends Resource
                                         ->title('Último atendimento')
                                         ->body(
                                             '<b>Data</b>: ' . $ultimoAtendimento->data_hora_atendimento->format('d/m/Y') . '<br>
-                                        <b>Queixa principal</b>: ' . $ultimoAtendimento->qp . '<br>
-                                        <br><b>História Clínica</b>: ' . $ultimoAtendimento->hdp . '<br>'
+                                            <br><b>Queixa principal</b>: ' . $ultimoAtendimento->qp . '<br>
+                                            <br><b>História Clínica</b>: ' . $ultimoAtendimento->hdp . '<br>
+                                            <br><b>Prescrição</b>: ' . nl2br(implode("\n", array_map(function($item, $index) { return ($index + 1) . '. ' . trim($item); }, explode(",", $ultimoAtendimento->medicamentos_detalhes), range(0, substr_count($ultimoAtendimento->medicamentos_detalhes, ','))))) . '<br>
+                                            <br><b>Prescrição Especial</b>: ' . nl2br(implode("\n", array_map(function($item, $index) { return ($index + 1) . '. ' . trim($item); }, explode(",", $ultimoAtendimento->medicamentos_detalhes_especial), range(0, substr_count($ultimoAtendimento->medicamentos_detalhes_especial, ','))))) . '<br>
+                                            <br><b>Exames</b>: ' . $ultimoAtendimento->resultados_exames . '<br>
+                                            <br><b>Encaminhamentos</b>: ' . $ultimoAtendimento->encaminhamentos->nome . '<br>
+                                            <br><b>Evolução</b>: ' . $ultimoAtendimento->evolucao . '<br>'
 
 
                                         )
@@ -548,10 +553,10 @@ class AtendimentoClinicoResource extends Resource
                                 if (is_array($state) && count($state)) {
                                     // Busca os medicamentos selecionados
                                     $medicamentos = \App\Models\Medicamento::whereIn('id', $state)->get(['nome', 'controle_especial']);
-                                    
+
                                     $novasLinhasNormal = [];
                                     $novasLinhasEspecial = [];
-                                    
+
                                     foreach ($medicamentos as $medicamento) {
                                         $linha = trim($medicamento->nome) . ' - ';
                                         if ($medicamento->controle_especial) {
@@ -608,7 +613,7 @@ class AtendimentoClinicoResource extends Resource
                         Forms\Components\Textarea::make('medicamentos_detalhes')
                             ->label('Detalhes da Medicação Prescrita')
                             ->autosize(),
-                        
+
                         Forms\Components\Textarea::make('medicamentos_detalhes_especial')
                             ->label('Detalhes da Medicação Prescrita - Especial')
                             ->autosize(),

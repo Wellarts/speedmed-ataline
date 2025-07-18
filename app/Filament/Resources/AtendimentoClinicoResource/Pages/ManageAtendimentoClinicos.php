@@ -12,10 +12,7 @@ class ManageAtendimentoClinicos extends ManageRecords
 {
     protected static string $resource = AtendimentoClinicoResource::class;
 
-
-    
-
-
+    protected static ?string $title = 'Atendimentos Clínicos';
 
     protected function getHeaderActions(): array
     {
