@@ -60,11 +60,7 @@ class MedicamentoResource extends Resource
                 Tables\Columns\TextColumn::make('nome')
                     ->label('Nome')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('principio_ativo')
-                    ->label('Princípio Ativo')
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable(),                
                 Tables\Columns\BooleanColumn::make('alergia')
                     ->label('Alergia')
                     ->alignCenter()

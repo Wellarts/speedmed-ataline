@@ -13,8 +13,7 @@ class Medicamento extends Model
 
     protected $table = 'medicamentos';
     protected $fillable = [
-        'nome',
-        'principio_ativo',
+        'nome',       
         'alergia',
         'uso_continuo',
         'controle_especial'

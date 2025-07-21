@@ -97,5 +97,23 @@ class DocumentosController extends Controller
                 ->setOption('isPhpEnabled', true)
                 ->setOption('isRemoteEnabled', true);
             return $pdf->stream('receituario_especial.pdf', ['Attachment' => false]);
+
     }
+            public function printReceituario($id) {
+                $atendimento = AtendimentoClinico::find($id);
+                if (!$atendimento) {
+                    abort(404);
+                }
+               $medicamentoReceituarioComum =  $atendimento->receituario ;
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.receituarioNew', compact('medicamentoReceituarioComum','atendimento'))
+                    ->setPaper('a4', 'portrait')
+                    ->setOption('isHtml5ParserEnabled', true)
+                    ->setOption('isPhpEnabled', true)
+                    ->setOption('isRemoteEnabled', true);
+                return $pdf->stream('receituario_comum.pdf', ['Attachment' => false]);   
+            }
+
+
+
+    
 }

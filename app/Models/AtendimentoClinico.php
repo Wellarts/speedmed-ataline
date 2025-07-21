@@ -123,9 +123,19 @@ class AtendimentoClinico extends Model
         return $this->belongsTo(Medicamento::class);
     }
 
+    public function receituario()
+    {
+        return $this->hasMany(Receituario::class);
+    }
+
     public function medico() 
     {
         return $this->belongsTo(Medico::class);
+    }
+
+    public function solicitacaoExames()
+    {
+        return $this->hasMany(SolicitacaoExame::class);
     }
 
     public function getActivitylogOptions(): LogOptions

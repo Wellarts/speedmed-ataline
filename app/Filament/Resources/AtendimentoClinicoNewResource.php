@@ -2,8 +2,11 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\AtendimentoClinicoResource\Pages;
+use App\Filament\Resources\AtendimentoClinicoNewResource\Pages;
+use App\Filament\Resources\AtendimentoClinicoNewResource\RelationManagers\ReceituarioRelationManager;
+use App\Filament\Resources\AtendimentoClinicoNewResource\RelationManagers\SolicitacaoExameRelationManager;
 use App\Models\AtendimentoClinico;
+//use App\Models\AtendimentoClinicoNew;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -12,11 +15,11 @@ use Filament\Tables\Table;
 use App\Models\Doenca;
 use Filament\Forms\Set;
 use App\Models\Medicamento;
+use App\Models\SolicitacaoExame;
 use Filament\Notifications\Notification;
-use Filament\Tables\Filters\SelectFilter;
 
 
-class AtendimentoClinicoResource extends Resource
+class AtendimentoClinicoNewResource extends Resource
 {
     protected static ?string $model = AtendimentoClinico::class;
 
@@ -24,11 +27,12 @@ class AtendimentoClinicoResource extends Resource
 
     protected static ?string $navigationGroup = 'Atendimentos';
 
-    protected static ?string $navigationLabel = 'Atendimentos Clínico';
+    protected static ?string $navigationLabel = 'Atendimentos Clínico Novos';
 
     protected static string $modalWidth = 'full';
 
-    public static function form(Form $form): Form
+    
+        public static function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -677,38 +681,10 @@ class AtendimentoClinicoResource extends Resource
 
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('status')
-                    ->options([
-                        '1' => 'Iniciada',
-                        '2' => 'Finalizada',
-                        '0' => 'Cancelada',
-                    ])
-                    ->label('Status'),
-                SelectFilter::make('paciente_id')
-                    ->relationship('paciente', 'nome')
-                    ->label('Paciente'),
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('Prontuário')
-                        ->icon('heroicon-o-document-text')
-                        ->url(fn(AtendimentoClinico $record) => route('documentos.prontuario', $record))
-                        ->openUrlInNewTab(),
-                    Tables\Actions\Action::make('receituarioComum')
-                        ->label('Receituário Comum')
-                        ->icon('heroicon-o-document-text')
-                        ->url(fn(AtendimentoClinico $record) => route('documentos.receituarioComum', $record))
-                        ->openUrlInNewTab(),
-                    Tables\Actions\Action::make('receituarioEspecial')
-                        ->label('Receituário Especial')
-                        ->icon('heroicon-o-document-text')
-                        ->url(fn(AtendimentoClinico $record) => route('documentos.receituarioEspecial', $record))
-                        ->openUrlInNewTab(),
-
-
-                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -717,13 +693,20 @@ class AtendimentoClinicoResource extends Resource
             ]);
     }
 
-    public static function getPages(): array
+    public static function getRelations(): array
     {
         return [
-            'index' => Pages\ManageAtendimentoClinicos::route('/'),
+            ReceituarioRelationManager::class,
+            SolicitacaoExameRelationManager::class,
         ];
     }
 
-   
-    
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListAtendimentoClinicoNews::route('/'),
+            'create' => Pages\CreateAtendimentoClinicoNew::route('/create'),
+            'edit' => Pages\EditAtendimentoClinicoNew::route('/{record}/edit'),
+        ];
+    }
 }
