@@ -63,18 +63,18 @@
         </div>
        
         <div class="centered-prescricao">
-            @foreach($medicamentoReceituarioComum as $medicamento)
-                <table style="width: 100%">
-                    <tr>                        <td style="text-align: left; width: 30%;"><b>{{ $medicamento->medicamento->nome }}</b></td>
-                        <td style="text-align: center; width: 40%;">_________________________________________</td>
-                        <td style="text-align: left; width: 30%;"><b>{{ $medicamento->qtd }}</b></td>
-                    </tr>
-                    <tr>
-                        <td colspan="3" style="text-align: left;">{{ $medicamento->forma_uso }}</td>
-                    </tr>
-                </table>
-                
-            @endforeach
+            <p><b>Exames solicitados:</b></p>
+            @if($atendimento->solicitacaoExames && $atendimento->solicitacaoExames->count() > 0)
+                @foreach($atendimento->solicitacaoExames as $solicitacao)
+                    @foreach($solicitacao->exames as $exame)
+                        <div class="exame-item">
+                            • {{ $exame->nome }}
+                        </div>
+                    @endforeach
+                @endforeach
+            @else
+                <p>Nenhum exame solicitado.</p>
+            @endif
         </div>
          <div class="data">{{ \Carbon\Carbon::now()->locale('pt_BR')->isoFormat('D [de] MMMM [de] YYYY') }}</div>
             <div style="position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); text-align: center; color: #666666; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">

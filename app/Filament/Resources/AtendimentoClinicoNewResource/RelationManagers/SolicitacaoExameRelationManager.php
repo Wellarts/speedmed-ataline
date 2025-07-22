@@ -58,7 +58,8 @@ class SolicitacaoExameRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('exames.nome')
                     ->listWithLineBreaks()
-                    ->bulleted()
+                    ->bulleted(),
+                
 
             ])
             ->filters([
@@ -69,7 +70,14 @@ class SolicitacaoExameRelationManager extends RelationManager
                     ->label('Solicitar Exames')
                     ->modalHeading('Solicitar Exames')
                     ->icon('heroicon-o-plus')
+                    ->createAnother(false)
                     ->disabled(fn($livewire) => $livewire->ownerRecord->solicitacaoExames()->count() > 0),
+                Tables\Actions\Action::make('print')
+                    ->label('Imprimir Exames')
+                    ->icon('heroicon-o-printer')
+                    ->color('success')
+                    ->url(fn($livewire) => route('documentos.solicitacaoExames.print', $livewire->ownerRecord->id))
+                    ->openUrlInNewTab(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

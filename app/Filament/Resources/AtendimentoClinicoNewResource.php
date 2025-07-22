@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\AtendimentoClinicoNewResource\Pages;
+use App\Filament\Resources\AtendimentoClinicoNewResource\RelationManagers\EncaminhamentosRelationManager;
 use App\Filament\Resources\AtendimentoClinicoNewResource\RelationManagers\ReceituarioRelationManager;
 use App\Filament\Resources\AtendimentoClinicoNewResource\RelationManagers\SolicitacaoExameRelationManager;
 use App\Models\AtendimentoClinico;
@@ -698,6 +699,7 @@ class AtendimentoClinicoNewResource extends Resource
         return [
             ReceituarioRelationManager::class,
             SolicitacaoExameRelationManager::class,
+            EncaminhamentosRelationManager::class,
         ];
     }
 

@@ -28,6 +28,11 @@ class Medicamento extends Model
     {
         return $this->hasMany(AtendimentoClinico::class, 'medicamento_uso_id');
     }
+
+    public function receituario()
+    {
+        return $this->hasMany(Receituario::class);
+    }
     
     public function getActivitylogOptions(): LogOptions
     {

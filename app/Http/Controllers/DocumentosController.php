@@ -73,14 +73,14 @@ class DocumentosController extends Controller
             abort(404);
         }
 
-        
 
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.receituario_comum', compact('prescricao'))
-                ->setPaper('a4', 'portrait')
-                ->setOption('isHtml5ParserEnabled', true)
-                ->setOption('isPhpEnabled', true)
-                ->setOption('isRemoteEnabled', true);
-            return $pdf->stream('receituario_comum.pdf', ['Attachment' => false]);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.receituario_comum', compact('prescricao'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isPhpEnabled', true)
+            ->setOption('isRemoteEnabled', true);
+        return $pdf->stream('receituario_comum.pdf', ['Attachment' => false]);
     }
 
     public function receituarioEspecial($id)
@@ -88,32 +88,82 @@ class DocumentosController extends Controller
         $prescricaoEspecial = AtendimentoClinico::find($id);
         if (!$prescricaoEspecial) {
             abort(404);
-        }        
-        
+        }
 
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.receituario_especial', compact('prescricaoEspecial'))
-                ->setPaper('a4', 'portrait')
-                ->setOption('isHtml5ParserEnabled', true)
-                ->setOption('isPhpEnabled', true)
-                ->setOption('isRemoteEnabled', true);
-            return $pdf->stream('receituario_especial.pdf', ['Attachment' => false]);
 
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.receituario_especial', compact('prescricaoEspecial'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isPhpEnabled', true)
+            ->setOption('isRemoteEnabled', true);
+        return $pdf->stream('receituario_especial.pdf', ['Attachment' => false]);
     }
-            public function printReceituario($id) {
-                $atendimento = AtendimentoClinico::find($id);
-                if (!$atendimento) {
-                    abort(404);
-                }
-               $medicamentoReceituarioComum =  $atendimento->receituario ;
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.receituarioNew', compact('medicamentoReceituarioComum','atendimento'))
-                    ->setPaper('a4', 'portrait')
-                    ->setOption('isHtml5ParserEnabled', true)
-                    ->setOption('isPhpEnabled', true)
-                    ->setOption('isRemoteEnabled', true);
-                return $pdf->stream('receituario_comum.pdf', ['Attachment' => false]);   
-            }
+    public function printReceituario($id)
+    {
+        $atendimento = AtendimentoClinico::find($id);
+        if (!$atendimento) {
+            abort(404);
+        }
+        // Filtrar apenas medicamentos de controle Comum do receituário
+        $medicamentoReceituarioComum = $atendimento->receituario->filter(function ($receituario) {
+            return $receituario->medicamento && $receituario->medicamento->controle_especial == 0;
+        });
 
+        // Verificar se existem medicamentos de controle Comum
+        if ($medicamentoReceituarioComum->isEmpty()) {
+            abort(404, 'Nenhum medicamento de controle Comum encontrado neste receituário.');
+        }
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.receituarioNew', compact('medicamentoReceituarioComum', 'atendimento'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isPhpEnabled', true)
+            ->setOption('isRemoteEnabled', true);
+        return $pdf->stream('receituario_comum.pdf', ['Attachment' => false]);
+    }
 
+    public function printReceituarioEspecial($id)
+    {
+        $atendimento = AtendimentoClinico::find($id);
 
-    
+        if (!$atendimento) {
+            abort(404);
+        }
+
+        // Filtrar apenas medicamentos de controle especial do receituário
+        $medicamentoReceituarioEspecial = $atendimento->receituario->filter(function ($receituario) {
+            return $receituario->medicamento && $receituario->medicamento->controle_especial == 1;
+        });
+
+        // Verificar se existem medicamentos de controle especial
+        if ($medicamentoReceituarioEspecial->isEmpty()) {
+            abort(404, 'Nenhum medicamento de controle especial encontrado neste receituário.');
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.receituarioNewEspecial', compact('medicamentoReceituarioEspecial', 'atendimento'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isPhpEnabled', true)
+            ->setOption('isRemoteEnabled', true);
+        return $pdf->stream('receituario_especial.pdf', ['Attachment' => false]);
+    }
+
+    public function printSolicitacaoExames($id)
+    {
+        $atendimento = AtendimentoClinico::find($id);
+        if (!$atendimento) {
+            abort(404);
+        }
+
+        $listaExames = $atendimento->solicitacaoExames;
+      if ($listaExames->isEmpty()) {
+            abort(404, 'Nenhum exame solicitado neste atendimento.');
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.solicitacaoExames', compact('atendimento', 'listaExames'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isPhpEnabled', true)
+            ->setOption('isRemoteEnabled', true);
+        return $pdf->stream('solicitacao_exames.pdf', ['Attachment' => false]);
+    }
 }

@@ -53,6 +53,12 @@ class ReceituarioRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('medicamento.nome')
                     ->label('Medicamento'),
+                Tables\Columns\TextColumn::make('medicamento.controle_especial')
+                    ->label('Controle Especial')
+                    ->alignCenter()
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state ? 'Sim' : 'Não')
+                    ->color(fn ($state) => $state ? 'danger' : 'success'),
                 Tables\Columns\TextColumn::make('qtd')
                     ->alignCenter()
                     ->label('Quantidade'),
@@ -69,9 +75,16 @@ class ReceituarioRelationManager extends RelationManager
                     ->modalHeading('Adicionar Medicamento ao Receituário'),
                     
                 Tables\Actions\Action::make('print')
-                    ->label('Imprimir Receituário')
+                    ->label('Imprimir Receituário Comum')
                     ->icon('heroicon-o-printer')
+                    ->color('success')
                     ->url(fn($livewire) => route('documentos.receituarionew.print', $livewire->ownerRecord->id))
+                    ->openUrlInNewTab(),
+                Tables\Actions\Action::make('printEspecial')
+                    ->label('Imprimir Receituário Especial')
+                    ->color('danger')
+                    ->icon('heroicon-o-printer')
+                    ->url(fn($livewire) => route('documentos.receituarionewEspecial.print', $livewire->ownerRecord->id))
                     ->openUrlInNewTab()
             ])
             ->actions([

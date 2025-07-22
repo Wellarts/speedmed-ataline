@@ -26,6 +26,11 @@ class Especialidade extends Model
         return $this->hasMany(AtendimentoClinico::class, 'especialidade_id');
     }
 
+    public function encaminhamentos()
+    {
+        return $this->hasMany(Encaminhamento::class);
+    }
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
