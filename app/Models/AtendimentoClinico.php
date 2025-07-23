@@ -46,13 +46,7 @@ class AtendimentoClinico extends Model
         'saturacao',
         'obs_exame_fisico',
         'hipotese_diagnostica_id',
-        'hipotese_diagnostica_detalhes',
-        'medicamentos_id',
-        'medicamentos_detalhes',
-        'medicamentos_detalhes_especial',
-        'exames_id',
-        'resultados_exames',
-        'encaminhamentos_id',
+        'hipotese_diagnostica_detalhes',        
         'orientacoes',
         'evolucao',
         'status',
@@ -60,13 +54,11 @@ class AtendimentoClinico extends Model
     ];
 
     protected $casts = [
-        'data_hora_atendimento' => 'datetime',
-        'medicamentos_id' => 'array',
-        'exames_id' => 'array',
+        'data_hora_atendimento' => 'datetime',        
         'anexos_resultados' => 'json',
         'doenca_preexistente' => 'array',
         'hipotese_diagnostica_id' => 'array',
-        'encaminhamentos_id' => 'array',
+       
         // 'hipotese_diagnostica_id' should not be cast to array or json
     ];  
     
@@ -108,20 +100,20 @@ class AtendimentoClinico extends Model
         return $this->belongsTo(Doenca::class);
     }
 
-    public function exames()
-    {
-        return $this->belongsTo(Exame::class);
-    }
+    // public function exames()
+    // {
+    //     return $this->belongsTo(Exame::class);
+    // }
 
-    public function encaminhamentos()
-    {
-        return $this->belongsTo(Especialidade::class);
-    }
+    // public function encaminhamentos()
+    // {
+    //     return $this->belongsTo(Especialidade::class);
+    // }
 
-    public function medicamentos()
-    {
-        return $this->belongsTo(Medicamento::class);
-    }
+    // public function medicamentos()
+    // {
+    //     return $this->belongsTo(Medicamento::class);
+    // }
 
     public function receituario()
     {

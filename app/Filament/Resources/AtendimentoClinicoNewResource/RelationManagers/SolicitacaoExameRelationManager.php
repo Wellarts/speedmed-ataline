@@ -13,9 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class SolicitacaoExameRelationManager extends RelationManager
 {
-    protected static string $relationship = 'SolicitacaoExames';  
+    protected static string $relationship = 'SolicitacaoExames';
 
-     protected static ?string $title = 'Solicitação de Exames';
+    protected static ?string $title = 'Solicitação de Exames';
 
     public function form(Form $form): Form
     {
@@ -30,14 +30,15 @@ class SolicitacaoExameRelationManager extends RelationManager
                     ->relationship('exames', 'nome')
                     ->getOptionLabelFromRecordUsing(fn($record) => $record->nome . ' (' . $record->tipo . ')')
                     ->required()
-                    ->live()                                       ->afterStateUpdated(function ($state, $set) {
-                       if (!empty($state)) {
-                           $exames = Exame::whereIn('id', $state)->pluck('nome')->map(function($nome) {
-                               return $nome . ':';
-                           })->implode("\n");
-                           $set('resultado', $exames);
-                       }
-                   })
+                    ->live()
+                    ->afterStateUpdated(function ($state, $set) {
+                        if (!empty($state)) {
+                            $exames = Exame::whereIn('id', $state)->pluck('nome')->map(function ($nome) {
+                                return $nome . ':';
+                            })->implode("\n");
+                            $set('resultado', $exames);
+                        }
+                    })
                     ->preload()
                     ->searchable('nome')
                     ->multiple(),
@@ -45,8 +46,8 @@ class SolicitacaoExameRelationManager extends RelationManager
                     ->autosize()
                     ->label('Resultado'),
 
-                    
-                
+
+
 
             ]);
     }
@@ -59,7 +60,7 @@ class SolicitacaoExameRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('exames.nome')
                     ->listWithLineBreaks()
                     ->bulleted(),
-                
+
 
             ])
             ->filters([
@@ -85,7 +86,7 @@ class SolicitacaoExameRelationManager extends RelationManager
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                   // Tables\Actions\DeleteBulkAction::make(),
+                    // Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
     }

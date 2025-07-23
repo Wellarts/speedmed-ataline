@@ -14,6 +14,8 @@ class EncaminhamentosRelationManager extends RelationManager
 {
     protected static string $relationship = 'encaminhamentosEspecialidades';
 
+    protected static ?string $title = 'Encaminhamentos';
+
     public function form(Form $form): Form
     {
         return $form
@@ -26,6 +28,7 @@ class EncaminhamentosRelationManager extends RelationManager
                     ->required()
                     ->searchable()
                     ->preload()
+                    ->multiple()
                     ->placeholder('Selecione uma especialidade'),
                     
             ]);
@@ -36,13 +39,27 @@ class EncaminhamentosRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('atendimento_clinico_id')
             ->columns([
-                Tables\Columns\TextColumn::make('atendimento_clinico_id'),
+                Tables\Columns\TextColumn::make('especialidades.nome')
+                    ->listWithLineBreaks()
+                    ->bulleted(),
             ])
             ->filters([
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->label('Novo Encaminhamento')
+                    ->icon('heroicon-o-plus')
+                    ->color('primary')
+                    ->createAnother(false)
+                    ->disabled(fn($livewire) => $livewire->ownerRecord->encaminhamentosEspecialidades()->count() > 0),
+                Tables\Actions\Action::make('print')
+                    ->label('Imprimir Encaminhamentos')
+                    ->icon('heroicon-o-printer')
+                    ->color('success')
+                    ->url(fn($livewire) => route('documentos.encaminhamentos.print', $livewire->ownerRecord->id))
+                    ->openUrlInNewTab(),
+                    
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

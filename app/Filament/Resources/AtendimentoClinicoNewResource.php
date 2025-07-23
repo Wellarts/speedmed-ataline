@@ -18,7 +18,7 @@ use Filament\Forms\Set;
 use App\Models\Medicamento;
 use App\Models\SolicitacaoExame;
 use Filament\Notifications\Notification;
-
+use Filament\Tables\Filters\SelectFilter;
 
 class AtendimentoClinicoNewResource extends Resource
 {
@@ -32,8 +32,8 @@ class AtendimentoClinicoNewResource extends Resource
 
     protected static string $modalWidth = 'full';
 
-    
-        public static function form(Form $form): Form
+
+    public static function form(Form $form): Form
     {
         return $form
             ->schema([
@@ -68,10 +68,17 @@ class AtendimentoClinicoNewResource extends Resource
                                             '<b>Data</b>: ' . $ultimoAtendimento->data_hora_atendimento->format('d/m/Y') . '<br>
                                             <br><b>Queixa principal</b>: ' . $ultimoAtendimento->qp . '<br>
                                             <br><b>História Clínica</b>: ' . $ultimoAtendimento->hdp . '<br>
-                                            <br><b>Prescrição</b>: ' . nl2br(implode("\n", array_map(function($item, $index) { return ($index + 1) . '. ' . trim($item); }, explode(",", $ultimoAtendimento->medicamentos_detalhes), range(0, substr_count($ultimoAtendimento->medicamentos_detalhes, ','))))) . '<br>
-                                            <br><b>Prescrição Especial</b>: ' . nl2br(implode("\n", array_map(function($item, $index) { return ($index + 1) . '. ' . trim($item); }, explode(",", $ultimoAtendimento->medicamentos_detalhes_especial), range(0, substr_count($ultimoAtendimento->medicamentos_detalhes_especial, ','))))) . '<br>
-                                            <br><b>Exames</b>: ' . $ultimoAtendimento->resultados_exames . '<br>
-                                            <br><b>Encaminhamentos</b>: ' . $ultimoAtendimento->encaminhamentos->nome . '<br>
+                                            <br><b>Receituário</b>: ' . ($ultimoAtendimento->receituario->isNotEmpty() ? $ultimoAtendimento->receituario->map(function($item) {
+                                                return $item->medicamento ? $item->medicamento->nome : 'Medicamento não encontrado';
+                                            })->implode(', ') : 'Nenhum medicamento') . '<br>
+                                            <br><b>Exames Solicitados</b>: ' . ($ultimoAtendimento->solicitacaoExames->isNotEmpty() ? $ultimoAtendimento->solicitacaoExames->map(function($item) {
+                                                                                            return $item->exame ? $item->exame->nome : 'Exame não encontrado';
+                                            })->implode(', ') : 'Nenhum exame') . '<br>
+                                            <br><b>Encaminhamentos</b>: ' . ($ultimoAtendimento->encaminhamentosEspecialidades->isNotEmpty() ? $ultimoAtendimento->encaminhamentosEspecialidades->map(function($item) {
+                                                return $item->especialidades->isNotEmpty() ? $item->especialidades->map(function($esp) {
+                                                    return $esp->nome;
+                                                })->implode(', ') : 'Especialidade não encontrada';
+                                            })->implode(', ') : 'Nenhum encaminhamento') . '<br>
                                             <br><b>Evolução</b>: ' . $ultimoAtendimento->evolucao . '<br>'
 
 
@@ -492,140 +499,6 @@ class AtendimentoClinicoNewResource extends Resource
                         Forms\Components\Textarea::make('hipotese_diagnostica_detalhes')
                             ->label('Detalhes da Hipótese Diagnóstica')
                             ->autosize(),
-                        Forms\Components\Select::make('exames_id')
-                            ->label('Exames Solicitados')
-                            ->relationship('exames', 'nome')
-                            ->getOptionLabelFromRecordUsing(fn($record) => $record->nome . ' (' . $record->tipo . ')')
-                            ->required()
-                            ->preload()
-                            ->searchable('nome')
-                            ->multiple()
-                            ->live()
-                            ->afterStateUpdated(function ($state, Set $set, $get) {
-                                // Recupera o valor atual do campo resultados_exames
-                                $valorAtual = $get('resultados_exames') ?? '';
-
-                                if (is_array($state) && count($state)) {
-                                    // Busca os exames selecionados com nome e tipo
-                                    $exames = \App\Models\Exame::whereIn('id', $state)->get(['nome', 'tipo']);
-                                    // Junta nome e tipo em uma string, cada um em uma linha: "NOME (TIPO) -"
-                                    $novasLinhas = [];
-                                    foreach ($exames as $exame) {
-                                        $linha = trim($exame->nome) . ' (' . trim($exame->tipo) . ') - ';
-                                        $novasLinhas[] = $linha;
-                                    }
-
-                                    // Quebra o valor atual em linhas e remove espaços extras
-                                    $linhasExistentes = array_map('trim', explode("\n", $valorAtual));
-
-                                    // Adiciona apenas as linhas que ainda não existem (comparando até o " -")
-                                    foreach ($novasLinhas as $linha) {
-                                        $existe = false;
-                                        $parteLinha = strtolower(trim(strtok($linha, '-')));
-                                        foreach ($linhasExistentes as $existente) {
-                                            $parteExistente = strtolower(trim(strtok($existente, '-')));
-                                            if ($parteLinha === $parteExistente) {
-                                                $existe = true;
-                                                break;
-                                            }
-                                        }
-                                        if ($linha && !$existe) {
-                                            $linhasExistentes[] = $linha;
-                                        }
-                                    }
-
-                                    // Atualiza o campo com todas as linhas únicas
-                                    $set('resultados_exames', implode("\n", array_filter($linhasExistentes)));
-                                }
-                            }),
-                        Forms\Components\Textarea::make('resultados_exames')
-                            ->label('Resultados dos Exames')
-                            ->autosize(),
-                        Forms\Components\Select::make('medicamentos_id')
-                            ->label('Prescrição Medicamentosa')
-                            ->relationship('medicamentos', 'nome')
-                            ->getOptionLabelFromRecordUsing(fn($record) => $record->nome . ' (' . $record->principio_ativo . ')')
-                            ->live()
-                            ->afterStateUpdated(function ($state, Set $set, $get) {
-                                // Recupera o valor atual dos campos de detalhes
-                                $valorAtualNormal = $get('medicamentos_detalhes') ?? '';
-                                $valorAtualEspecial = $get('medicamentos_detalhes_especial') ?? '';
-
-                                if (is_array($state) && count($state)) {
-                                    // Busca os medicamentos selecionados
-                                    $medicamentos = \App\Models\Medicamento::whereIn('id', $state)->get(['nome', 'controle_especial']);
-
-                                    $novasLinhasNormal = [];
-                                    $novasLinhasEspecial = [];
-
-                                    foreach ($medicamentos as $medicamento) {
-                                        $linha = trim($medicamento->nome) . ' - ';
-                                        if ($medicamento->controle_especial) {
-                                            $novasLinhasEspecial[] = $linha;
-                                        } else {
-                                            $novasLinhasNormal[] = $linha;
-                                        }
-                                    }
-
-                                    // Processa medicamentos normais
-                                    $linhasExistentesNormal = array_map('trim', explode("\n", $valorAtualNormal));
-                                    foreach ($novasLinhasNormal as $linha) {
-                                        $existe = false;
-                                        $parteLinha = strtolower(trim(strtok($linha, '-')));
-                                        foreach ($linhasExistentesNormal as $existente) {
-                                            $parteExistente = strtolower(trim(strtok($existente, '-')));
-                                            if ($parteLinha === $parteExistente) {
-                                                $existe = true;
-                                                break;
-                                            }
-                                        }
-                                        if ($linha && !$existe) {
-                                            $linhasExistentesNormal[] = $linha;
-                                        }
-                                    }
-
-                                    // Processa medicamentos especiais
-                                    $linhasExistentesEspecial = array_map('trim', explode("\n", $valorAtualEspecial));
-                                    foreach ($novasLinhasEspecial as $linha) {
-                                        $existe = false;
-                                        $parteLinha = strtolower(trim(strtok($linha, '-')));
-                                        foreach ($linhasExistentesEspecial as $existente) {
-                                            $parteExistente = strtolower(trim(strtok($existente, '-')));
-                                            if ($parteLinha === $parteExistente) {
-                                                $existe = true;
-                                                break;
-                                            }
-                                        }
-                                        if ($linha && !$existe) {
-                                            $linhasExistentesEspecial[] = $linha;
-                                        }
-                                    }
-
-                                    // Atualiza os campos com as linhas únicas
-                                    $set('medicamentos_detalhes', implode("\n", array_filter($linhasExistentesNormal)));
-                                    $set('medicamentos_detalhes_especial', implode("\n", array_filter($linhasExistentesEspecial)));
-                                }
-                            })
-                            ->required()
-                            ->preload()
-                            ->searchable(['nome', 'principio_ativo'])
-                            ->columnSpanFull()
-                            ->multiple(),
-                        Forms\Components\Textarea::make('medicamentos_detalhes')
-                            ->label('Detalhes da Medicação Prescrita')
-                            ->autosize(),
-
-                        Forms\Components\Textarea::make('medicamentos_detalhes_especial')
-                            ->label('Detalhes da Medicação Prescrita - Especial')
-                            ->autosize(),
-                        Forms\Components\Select::make('encaminhamentos_id')
-                            ->label('Encaminhamentos')
-                            ->relationship('encaminhamentos', 'nome')
-                            ->getOptionLabelFromRecordUsing(fn($record) => $record->nome)
-                            ->required()
-                            ->preload()
-                            ->searchable('nome')
-                            ->multiple(),
 
                         Forms\Components\Textarea::make('evolucao')
                             ->label('Evolução')
@@ -682,10 +555,25 @@ class AtendimentoClinicoNewResource extends Resource
 
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->options([
+                        '1' => 'Iniciada',
+                        '2' => 'Finalizada',
+                        '0' => 'Cancelada',
+                    ])
+                    ->label('Status'),
+                SelectFilter::make('paciente_id')
+                    ->relationship('paciente', 'nome')
+                    ->label('Paciente'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('Prontuário')
+                        ->icon('heroicon-o-document-text')
+                        ->url(fn(AtendimentoClinico $record) => route('documentos.prontuario', $record))
+                        ->openUrlInNewTab(),
+                
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
