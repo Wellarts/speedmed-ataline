@@ -13,7 +13,11 @@ class ManageDoencas extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Nova Doença')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->modalHeading('Criar Nova Doença'),
         ];
     }
 }

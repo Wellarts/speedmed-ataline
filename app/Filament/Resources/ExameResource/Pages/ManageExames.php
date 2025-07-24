@@ -13,7 +13,11 @@ class ManageExames extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Novo Exame')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->modalHeading('Criar Novo Exame'),
         ];
     }
 }

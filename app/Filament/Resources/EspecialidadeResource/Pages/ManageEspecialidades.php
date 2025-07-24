@@ -10,10 +10,16 @@ class ManageEspecialidades extends ManageRecords
 {
     protected static string $resource = EspecialidadeResource::class;
 
+    
+
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Nova Especialidade')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->modalHeading('Criar Nova Especialidade'),
         ];
     }
 }

@@ -13,7 +13,11 @@ class ManageMedicamentos extends ManageRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            Actions\CreateAction::make()
+                ->label('Novo Medicamento')
+                ->icon('heroicon-o-plus')
+                ->color('primary')
+                ->modalHeading('Criar Novo Medicamento'),
         ];
     }
 }
