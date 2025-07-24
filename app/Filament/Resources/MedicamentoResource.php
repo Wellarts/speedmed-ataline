@@ -32,12 +32,7 @@ class MedicamentoResource extends Resource
                     ->label('Nome')
                     ->required()
                     ->maxLength(255)
-                    ->helperText('Informe o nome do medicamento'),
-                Forms\Components\TextInput::make('principio_ativo')
-                    ->label('Princípio Ativo')
-                    ->required()
-                    ->maxLength(255)
-                    ->helperText('Informe o princípio ativo do medicamento'),                    
+                    ->helperText('Informe o nome do medicamento'),                                   
                 Forms\Components\Checkbox::make('alergia')
                     ->label('Alergia')
                     ->default(false)
