@@ -155,7 +155,7 @@
         <div class="patient-info">
             <h3>Identificação do Paciente</h3>
             <p><strong>Nome:</strong> {{ $atendimento->paciente->nome ?? '-' }} </p>
-            <p><strong>Endereço:</strong> {{ $atendimento->paciente->endereco_completo ?? 'Não informado'.' - '.$atendimento->paciente->cidade->nome ?? 'Não informado'.' - ' .$atendimento->paciente->estado->nome ?? 'Não informado'.' - '.$atendimento->paciente->estado->uf ?? 'Não informado'  }}</p>
+            <p><strong>Endereço:</strong> {{ $atendimento->paciente->endereco_completo ?? 'Não informado'.' - '.$atendimento->paciente->cidade->nome ?? 'Não informado'.' - ' .$atendimento->paciente->estado->uf ?? 'Não informado'  }}</p>
             <p><strong>RG:</strong> {{ $atendimento->paciente->rg }} <strong style="margin-left: 40%">CPF:</strong> {{ $atendimento->paciente->cpf }}</p>
             <p><strong>Data de Nascimento:</strong> {{ date('d/m/Y', strtotime($atendimento->paciente->data_nascimento ?? 'Não informado')) }}<strong style="margin-left: 24%">Telefone:</strong> {{ $prescricaoEspecial->paciente->telefone ?? 'Não informado' }}</p>
         </div>
