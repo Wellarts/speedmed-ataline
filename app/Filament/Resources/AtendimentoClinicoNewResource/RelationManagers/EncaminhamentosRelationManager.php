@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\AtendimentoClinicoNewResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -29,7 +30,20 @@ class EncaminhamentosRelationManager extends RelationManager
                     ->searchable()
                     ->preload()
                     ->multiple()
-                    ->placeholder('Selecione uma especialidade'),
+                    ->placeholder('Selecione uma especialidade')
+                    ->createOptionForm([
+                        Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('nome')
+                                    ->label('Nome')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(ignoreRecord: true),
+                                Forms\Components\Textarea::make('descricao')
+                                    ->label('Descrição')
+                                    ->maxLength(255),
+                            ]),
+                    ])  ,
                     
             ]);
     }

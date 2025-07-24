@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\AtendimentoClinicoNewResource\RelationManagers;
 
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -31,7 +32,31 @@ class ReceituarioRelationManager extends RelationManager
                             ->relationship('medicamento', 'nome')
                             ->required()
                             ->searchable()
-                            ->label('Medicamento'),
+                            ->label('Medicamento')
+                            ->createOptionForm([
+                                Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('nome')
+                                            ->label('Nome')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->unique(ignoreRecord: true),
+                                        Forms\Components\TextInput::make('principio_ativo')
+                                            ->label('Princípio Ativo')
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\Checkbox::make('alergia')
+                                            ->label('Alergia')
+                                            ->default(false),
+                                        Forms\Components\Checkbox::make('uso_continuo')
+                                            ->label('Uso Contínuo')
+                                            ->default(false),
+                                        Forms\Components\Checkbox::make('controle_especial')
+                                            ->label('Controle Especial')
+                                            ->default(false),
+                                    ]),
+                                
+                            ]),
                         Forms\Components\TextInput::make('qtd')
                             ->required()
                             ->placeholder('Ex: 10 compridos')
@@ -57,8 +82,8 @@ class ReceituarioRelationManager extends RelationManager
                     ->label('Controle Especial')
                     ->alignCenter()
                     ->badge()
-                    ->formatStateUsing(fn ($state) => $state ? 'Sim' : 'Não')
-                    ->color(fn ($state) => $state ? 'danger' : 'success'),
+                    ->formatStateUsing(fn($state) => $state ? 'Sim' : 'Não')
+                    ->color(fn($state) => $state ? 'danger' : 'success'),
                 Tables\Columns\TextColumn::make('qtd')
                     ->alignCenter()
                     ->label('Quantidade'),
@@ -73,7 +98,7 @@ class ReceituarioRelationManager extends RelationManager
                     ->label('Adicionar Medicamento')
                     ->icon('heroicon-o-plus')
                     ->modalHeading('Adicionar Medicamento ao Receituário'),
-                    
+
                 Tables\Actions\Action::make('print')
                     ->label('Imprimir Receituário Comum')
                     ->icon('heroicon-o-printer')

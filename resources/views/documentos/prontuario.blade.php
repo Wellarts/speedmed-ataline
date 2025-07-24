@@ -148,7 +148,7 @@
         }
 
         .signature-area {
-            margin-top: 0px;
+            margin-top: 200px;
             text-align: center;
         }
 
@@ -224,7 +224,7 @@
                     <table>
                         <tbody>
                             <tr>
-                                <td colspan="2" style="padding: 2px 4px;">
+                                <td style="padding: 2px 4px;">
                                     <span class="label">Nome:</span>
                                     <span class="value">{{ $prontuario->paciente->nome }}</span>
                                 </td>
@@ -233,32 +233,60 @@
                                     <span
                                         class="value">{{ $prontuario->paciente->data_nascimento ? \Carbon\Carbon::parse($prontuario->paciente->data_nascimento)->format('d/m/Y') : 'Não informado' }}</span>
                                 </td>
-                            </tr>
-                            <tr>
                                 <td style="width: 33%; padding: 2px 4px;">
                                     <span class="label">CPF:</span>
                                     <span class="value">{{ $prontuario->paciente->cpf }}</span>
                                 </td>
+                            </tr>
+                            <tr>
+                                
                                 <td style="width: 33%; padding: 2px 4px;">
                                     <span class="label">RG:</span>
                                     <span class="value">{{ $prontuario->paciente->rg ?? 'Não informado' }}</span>
                                 </td>
                                 <td style="width: 33%; padding: 2px 4px;">
                                     <span class="label">Gênero:</span>
-                                    <span class="value">{{ $prontuario->paciente->genero  }}</span>
+                                    <span class="value">
+                                        @if ($prontuario->paciente->genero == 1)
+                                            Masculino
+                                        @elseif($prontuario->paciente->genero == 2)
+                                            Feminino
+                                        @elseif($prontuario->paciente->genero == 3)
+                                            Outros
+                                        @else
+                                            {{ $prontuario->paciente->genero }}
+                                            <!-- Caso tenha outro valor não especificado -->
+                                        @endif
+                                    </span>
+                                </td>
+                                <td style="padding: 2px 4px;">
+                                    <span class="label">Estado Civil:</span>
+                                    <span class="value">
+                                        @php
+                                            $estadoCivil = $prontuario->paciente->estado_civil ?? null;
+                                        @endphp
+
+                                        @if ($estadoCivil === 1)
+                                            Solteiro
+                                        @elseif($estadoCivil === 2)
+                                            Casado
+                                        @elseif($estadoCivil === 3)
+                                            Divorciado
+                                        @elseif($estadoCivil === 4)
+                                            Viúvo
+                                        @else
+                                            Não informado
+                                        @endif
+                                    </span>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding: 2px 4px;">
-                                    <span class="label">Estado Civil:</span>
-                                    <span
-                                        class="value">{{ $prontuario->paciente->estado_civil ?? 'Não informado' }}</span>
-                                </td>
+                                
                                 <td style="padding: 2px 4px;">
                                     <span class="label">Telefone:</span>
                                     <span class="value">{{ $prontuario->paciente->telefone ?? 'Não informado' }}</span>
                                 </td>
-                                <td style="padding: 2px 4px;">
+                                <td colspan="2" style="padding: 2px 4px;">
                                     <span class="label">E-mail:</span>
                                     <span class="value">{{ $prontuario->paciente->email ?? 'Não informado' }}</span>
                                 </td>
@@ -283,8 +311,19 @@
                             <tr>
                                 <td style="padding: 2px 4px;">
                                     <span class="label">Grau de Parentesco:</span>
-                                    <span
-                                        class="value">{{ $prontuario->paciente->grau_parentesco ?? 'Não informado' }}</span>
+                                    <span class="value">
+                                        @if (($prontuario->paciente->grau_parentesco ?? 0) == 1)
+                                            Pai/Mãe
+                                        @elseif(($prontuario->paciente->grau_parentesco ?? 0) == 2)
+                                            Filho(a)
+                                        @elseif(($prontuario->paciente->grau_parentesco ?? 0) == 3)
+                                            Cônjuge
+                                        @elseif(($prontuario->paciente->grau_parentesco ?? 0) == 4)
+                                            Outro
+                                        @else
+                                            Não informado
+                                        @endif
+                                    </span>
                                 </td>
                                 <td colspan="2" style="padding: 2px 4px;"></td>
                             </tr>

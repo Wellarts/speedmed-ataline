@@ -4,6 +4,7 @@ namespace App\Filament\Resources\AtendimentoClinicoNewResource\RelationManagers;
 
 use App\Models\Exame;
 use Filament\Forms;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
@@ -41,7 +42,29 @@ class SolicitacaoExameRelationManager extends RelationManager
                     })
                     ->preload()
                     ->searchable('nome')
-                    ->multiple(),
+                    ->multiple()
+                    ->createOptionForm([
+                        Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('nome')
+                                    ->label('Nome')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->unique(ignoreRecord: true),
+                                Forms\Components\Textarea::make('descricao')
+                                    ->label('Descrição')
+                                    ->maxLength(255),
+                                Forms\Components\Select::make('tipo')
+                                    ->label('Tipo')
+                                    ->options([
+                                        '1' => 'Laboratorial',
+                                        '2' => 'Imagem',
+                                    ])
+                                    ->required()
+                                    ->default('1'),
+                            ]),
+                    ]),
+                       
                 Forms\Components\Textarea::make('resultado')
                     ->autosize()
                     ->label('Resultado'),

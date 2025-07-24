@@ -28,7 +28,7 @@ class AtendimentoClinicoNewResource extends Resource
 
     protected static ?string $navigationGroup = 'Atendimentos';
 
-    protected static ?string $navigationLabel = 'Atendimentos Clínico Novos';
+    protected static ?string $navigationLabel = 'Atendimentos Clínico';
 
     protected static string $modalWidth = 'full';
 
