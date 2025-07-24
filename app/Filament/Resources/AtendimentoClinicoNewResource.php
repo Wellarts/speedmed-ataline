@@ -72,7 +72,7 @@ class AtendimentoClinicoNewResource extends Resource
                                                 return $item->medicamento ? $item->medicamento->nome : 'Medicamento não encontrado';
                                             })->implode(', ') : 'Nenhum medicamento') . '<br>
                                             <br><b>Exames Solicitados</b>: ' . ($ultimoAtendimento->solicitacaoExames->isNotEmpty() ? $ultimoAtendimento->solicitacaoExames->map(function($item) {
-                                                                                            return $item->exame ? $item->exame->nome : 'Exame não encontrado';
+                                                                                            return  $item->resultado ? $item->resultado : 'Exame não encontrado';
                                             })->implode(', ') : 'Nenhum exame') . '<br>
                                             <br><b>Encaminhamentos</b>: ' . ($ultimoAtendimento->encaminhamentosEspecialidades->isNotEmpty() ? $ultimoAtendimento->encaminhamentosEspecialidades->map(function($item) {
                                                 return $item->especialidades->isNotEmpty() ? $item->especialidades->map(function($esp) {
