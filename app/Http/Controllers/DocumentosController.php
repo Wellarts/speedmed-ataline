@@ -146,49 +146,26 @@ class DocumentosController extends Controller
     
 public function printEncaminhamentos($id)
 {
-    $atendimento = AtendimentoClinico::find($id);
-    if (!$atendimento) {
-        abort(404);
-    }
+        $atendimento = AtendimentoClinico::find($id);
+        if (!$atendimento) {
+            abort(404);
+        }
 
-    $encaminhamentos = $atendimento->encaminhamento;
-    $pdfs = [];
+        $listaEncaminhamentos = $atendimento->encaminhamento;
 
-    foreach ($encaminhamentos as $encaminhamento) {
-        foreach ($encaminhamento->especialidades as $especialidade) {
-            // Gera um PDF para cada especialidade
-            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView(
-                'documentos.encaminhamentos',
-                [
-                    'atendimento' => $atendimento,
-                    'encaminhamento' => $encaminhamento,
-                    'especialidade' => $especialidade
-                ]
-            )
+      //  dd($listaEncaminhamentos);
+
+        if ($listaEncaminhamentos->isEmpty()) {
+            abort(404, 'Nenhum encaminhamento encontrado neste atendimento.');
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.encaminhamentos', compact('atendimento', 'listaEncaminhamentos'))
             ->setPaper('a4', 'portrait')
             ->setOption('isHtml5ParserEnabled', true)
             ->setOption('isPhpEnabled', true)
-            ->setOption('isRemoteEnabled', true)
-            ->setOption('dpi', 150)
-            ->setOption('defaultFont', 'sans-serif')
-            ->setOption('enable_php', true);
+            ->setOption('isRemoteEnabled', true);
+        return $pdf->stream('encaminhamentos.pdf', ['Attachment' => false]);
 
-            // Salva o PDF em um array (você pode salvar em disco ou retornar para download)
-            $pdfs[] = [
-                'nome' => 'encaminhamento_' . $especialidade->nome . '.pdf',
-                'conteudo' => $pdf->output()
-            ];
-        }
+        
     }
-    
-
-    // Exemplo: Retornar o primeiro PDF gerado para visualização
-    if (!empty($pdfs)) {
-        return response($pdfs[0]['conteudo'])
-            ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'inline; filename="' . $pdfs[0]['nome'] . '"');
-    } else {
-        abort(404, 'Nenhuma especialidade encontrada.');
-    }
-}
 }

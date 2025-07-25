@@ -63,56 +63,68 @@
             color: #666666;
             margin-top: 10px;
         }
+        .descricao-item {
+            font-size: 18px;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            color: #666666;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
 <body>
-    @if($atendimento->encaminhamento && $atendimento->encaminhamento->count() > 0)
-    @foreach($atendimento->encaminhamento as $encaminhamento)
-    @foreach($encaminhamento->especialidades as $especialidade)
-    <div class="container" @if(!$loop->last || !$loop->parent->last) style="page-break-after: always;" @endif>
-        <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image" alt="Receituário Comum" />
-        <div style="position: absolute; top: 20%; left: 50%; transform: translateY(-50%); font-size: 22px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
-            Paciente: {{ $atendimento->paciente->nome }} <br>
-
-        </div>
-
-        <div class="centered-prescricao">
-            <p><b>Encaminhamento:</b></p>
-            <div class="exame-item">
-                • {{ $especialidade->nome ?? '' }}
+    
+    @if ($listaEncaminhamentos && count($listaEncaminhamentos) > 0)
+        @foreach ($listaEncaminhamentos as $encaminhamento)
+            <div class="container" @if (!$loop->last) style="page-break-after: always;" @endif>
+                <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image"
+                    alt="Receituário Comum" />
+                <div
+                    style="position: absolute; top: 20%; left: 5%; transform: translateY(-50%); font-size: 22px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
+                    Paciente: {{ $atendimento->paciente->nome }} <br>
+                </div>
+                <div class="centered-prescricao">
+                    <p><b>Encaminhamento:</b></p>
+                    <div class="exame-item">
+                        • {{ $encaminhamento->especialidade->nome ?? '' }}
+                    </div>
+                    <div class="descricao-item">
+                        <b>Motivo:</b> {{ $encaminhamento->descricao ?? 'Nenhuma descrição fornecida.' }}    
+                    </div>
+                </div>
+                <div class="data">
+                    {{ \Carbon\Carbon::now()->locale('pt_BR')->isoFormat('D [de] MMMM [de] YYYY') }}
+                </div>
+                <div
+                    style="position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); text-align: center; color: #666666; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                    <div style="border-top: 1px solid #666666; padding-top: 5px; width: 250px;">
+                        Dr(a). {{ $atendimento->medico->nome }} <br>
+                        CRM: {{ $atendimento->medico->crm }}
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="data">{{ \Carbon\Carbon::now()->locale('pt_BR')->isoFormat('D [de] MMMM [de] YYYY') }}</div>
-        <div style="position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); text-align: center; color: #666666; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-            <div style="border-top: 1px solid #666666; padding-top: 5px; width: 250px;">
-                Dr(a). {{$atendimento->medico->nome}} <br>
-                CRM: {{$atendimento->medico->crm}}
-            </div>
-        </div>
-    </div>
-    @endforeach
-    @endforeach
+        @endforeach
     @else
-    <div class="container">
-        <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image" alt="Receituário Comum" />
-        <div style="position: absolute; top: 20%; left: 50%; transform: translateY(-50%); font-size: 16px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
-            Paciente: {{ $atendimento->paciente->nome }} <br>
-
-        </div>
-
-        <div class="centered-prescricao">
-            <p><b>Encaminhamento:</b></p>
-            <p>Nenhum encaminhamento solicitado.</p>
-        </div>
-        <div class="data">{{ \Carbon\Carbon::now()->locale('pt_BR')->isoFormat('D [de] MMMM [de] YYYY') }}</div>
-        <div style="position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); text-align: center; color: #666666; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
-            <div style="border-top: 1px solid #666666; padding-top: 5px; width: 250px;">
-                Dr(a). {{$atendimento->medico->nome}} <br>
-                CRM: {{$atendimento->medico->crm}}
+        <div class="container">
+            <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image"
+                alt="Receituário Comum" />
+            <div
+                style="position: absolute; top: 20%; left: 50%; transform: translateY(-50%); font-size: 16px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
+                Paciente: {{ $atendimento->paciente->nome }} <br>
+            </div>
+            <div class="centered-prescricao">
+                <p><b>Encaminhamento:</b></p>
+                <p>Nenhum encaminhamento solicitado.</p>
+            </div>
+            <div class="data">{{ \Carbon\Carbon::now()->locale('pt_BR')->isoFormat('D [de] MMMM [de] YYYY') }}</div>
+            <div
+                style="position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); text-align: center; color: #666666; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+                <div style="border-top: 1px solid #666666; padding-top: 5px; width: 250px;">
+                    Dr(a). {{ $atendimento->medico->nome }} <br>
+                    CRM: {{ $atendimento->medico->crm }}
+                </div>
             </div>
         </div>
-    </div>
     @endif
 </body>
 
