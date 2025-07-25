@@ -180,6 +180,7 @@ public function printEncaminhamentos($id)
             ];
         }
     }
+    
 
     // Exemplo: Retornar o primeiro PDF gerado para visualização
     if (!empty($pdfs)) {
