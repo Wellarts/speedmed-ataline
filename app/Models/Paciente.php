@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Faker\Documentor;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -46,6 +47,13 @@ class Paciente extends Model
     {
         return $this->belongsTo(Cidade::class);
     }
+
+    public function documento()
+    {
+        return $this->hasMany(Documento::class);
+    }
+
+
 
     public function getActivitylogOptions(): LogOptions
     {

@@ -128,7 +128,9 @@ class AtendimentoClinico extends Model
     public function solicitacaoExames()
     {
         return $this->hasMany(SolicitacaoExame::class);
-    }    
+    }   
+    
+    
 
     public function getActivitylogOptions(): LogOptions
     {
