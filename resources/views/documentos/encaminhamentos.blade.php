@@ -62,9 +62,9 @@
         }
     </style>
 </head>
-<body>
-    @if($atendimento->encaminhamentosEspecialidades && $atendimento->encaminhamentosEspecialidades->count() > 0)
-        @foreach($atendimento->encaminhamentosEspecialidades as $encaminhamento)
+<body>    
+    @if($atendimento->encaminhamento && $atendimento->encaminhamento->count() > 0)
+        @foreach($atendimento->encaminhamento as $encaminhamento)
             @foreach($encaminhamento->especialidades as $especialidade)
                 <div class="container" @if(!$loop->last || !$loop->parent->last) style="page-break-after: always;" @endif>
                     <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image" alt="Receituário Comum"/>

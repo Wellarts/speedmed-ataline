@@ -10,6 +10,7 @@ class Receituario extends Model
     use HasFactory;
 
     protected $table = 'receituarios';
+    
     protected $fillable = [
         'atendimento_clinico_id',
         'medicamento_id',

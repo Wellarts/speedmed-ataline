@@ -150,11 +150,11 @@ class DocumentosController extends Controller
             abort(404);
         }
 
-        $encaminhamentos = $atendimento->encaminhamentosEspecialidades;
-        if ($encaminhamentos->isEmpty()) {
-            abort(404, 'Nenhum encaminhamento encontrado neste atendimento.');
-        }
-
+        $encaminhamentos = $atendimento->encaminhamento;
+        // if ($encaminhamentos->isEmpty()) {
+        //     abort(404, 'Nenhum encaminhamento encontrado neste atendimento.');
+        // }
+       // dd($encaminhamentos);
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.encaminhamentos', compact('atendimento', 'encaminhamentos'))
             ->setPaper('a4', 'portrait')
             ->setOption('isHtml5ParserEnabled', true)

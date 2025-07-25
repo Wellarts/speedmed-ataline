@@ -12,15 +12,25 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class EncaminhamentoRelationManager extends RelationManager
 {
-    protected static string $relationship = 'encaminhamento';
+    protected static string $relationship = 'Encaminhamento';
 
     public function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('atendimento_clinico_id')
+                Forms\Components\Hidden::make('atendimento_clinico_id')
+                    ->default((function ($livewire): int {
+                                return $livewire->ownerRecord->id;
+                            })),
+                Forms\Components\Select::make('especialidade_id')
+                    ->relationship('especialidade', 'nome')
                     ->required()
-                    ->maxLength(255),
+                    ->searchable()
+                    ->label('Especialidade'),
+                Forms\Components\Textarea::make('descricao')
+                    ->label('Descrição')  
+                    ->autosize(),                  
+                    
             ]);
     }
 
@@ -29,13 +39,26 @@ class EncaminhamentoRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('atendimento_clinico_id')
             ->columns([
-                Tables\Columns\TextColumn::make('atendimento_clinico_id'),
+                Tables\Columns\TextColumn::make('especialidade.nome')
+                    ->label('Especialidade')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('descricao')
+                    ->label('Descrição'),
+                    
+                
             ])
             ->filters([
                 //
             ])
             ->headerActions([
                 Tables\Actions\CreateAction::make(),
+                Tables\Actions\Action::make('print')
+                    ->label('Imprimir Encaminhamento')
+                    ->icon('heroicon-o-printer')
+                    ->color('success')
+                    ->url(fn($livewire) => route('documentos.encaminhamentos.print', $livewire->ownerRecord->id))
+                    ->openUrlInNewTab(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -12,9 +12,15 @@ class Encaminhamento extends Model
     protected $table = 'encaminhamentos';
 
     protected $fillable = [
-        'encaminhamento_id',
+        'atendimento_clinico_id',
+        'especialidade_id',
         'descricao',
         
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
     ];
 
     public function atendimentoClinico()
@@ -22,7 +28,7 @@ class Encaminhamento extends Model
         return $this->belongsTo(AtendimentoClinico::class);
     }
 
-    public function especialidades()
+    public function especialidade()
     {
         return $this->belongsTo(Especialidade::class);
     }

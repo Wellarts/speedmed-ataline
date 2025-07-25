@@ -26,7 +26,7 @@ class Especialidade extends Model
         return $this->hasMany(AtendimentoClinico::class, 'especialidade_id');
     }
 
-    public function encaminhamentos()
+    public function encaminhamento()
     {
         return $this->hasMany(Encaminhamento::class);
     }

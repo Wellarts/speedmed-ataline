@@ -105,9 +105,9 @@ class AtendimentoClinico extends Model
     //     return $this->belongsTo(Exame::class);
     // }
 
-    public function encaminhamentos()
+    public function encaminhamento()
     {
-        return $this->belongsTo(Encaminhamento::class);
+        return $this->hasMany(Encaminhamento::class);
     }
 
     // public function medicamentos()
