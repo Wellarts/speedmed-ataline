@@ -204,16 +204,17 @@ class PacienteResource extends Resource
                     ->label('Gênero')
                     ->searchable()
                     ->sortable()
-                    ->formatStateUsing(function ($record) {
-                        return match ($record->genero) {
-                            1 => 'Masculino',
-                            2 => 'Feminino',
-                            3 => 'Outro',
-                            default => 'Não Informado',
-                        };
-                    }
+                    ->formatStateUsing(
+                        function ($record) {
+                            return match ($record->genero) {
+                                1 => 'Masculino',
+                                2 => 'Feminino',
+                                3 => 'Outro',
+                                default => 'Não Informado',
+                            };
+                        }
                     ),
-                Tables\Columns\TextColumn::make('idade')   
+                Tables\Columns\TextColumn::make('idade')
                     ->label('Idade')
                     ->alignCenter()
                     ->default('-')
@@ -225,15 +226,15 @@ class PacienteResource extends Resource
                         }
                         return '-';
                     }),
-                    
-               
+
+
                 Tables\Columns\TextColumn::make('cpf')
                     ->label('CPF')
                     ->alignCenter()
                     ->searchable()
                     ->sortable(),
-                
-                
+
+
             ])
             ->filters([
                 //

@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Models\Doenca;
+use App\Models\Estado;
 use Filament\Forms\Set;
 use App\Models\Medicamento;
 use App\Models\SolicitacaoExame;
@@ -68,14 +69,14 @@ class AtendimentoClinicoNewResource extends Resource
                                             '<b>Data</b>: ' . $ultimoAtendimento->data_hora_atendimento->format('d/m/Y') . '<br>
                                             <br><b>Queixa principal</b>: ' . $ultimoAtendimento->qp . '<br>
                                             <br><b>História Clínica</b>: ' . $ultimoAtendimento->hdp . '<br>
-                                            <br><b>Receituário</b>: ' . ($ultimoAtendimento->receituario->isNotEmpty() ? $ultimoAtendimento->receituario->map(function($item) {
+                                            <br><b>Receituário</b>: ' . ($ultimoAtendimento->receituario->isNotEmpty() ? $ultimoAtendimento->receituario->map(function ($item) {
                                                 return $item->medicamento ? $item->medicamento->nome : 'Medicamento não encontrado';
                                             })->implode(', ') : 'Nenhum medicamento') . '<br>
-                                            <br><b>Exames Solicitados</b>: ' . ($ultimoAtendimento->solicitacaoExames->isNotEmpty() ? $ultimoAtendimento->solicitacaoExames->map(function($item) {
-                                                                                            return  $item->resultado ? $item->resultado : 'Exame não encontrado';
+                                            <br><b>Exames Solicitados</b>: ' . ($ultimoAtendimento->solicitacaoExames->isNotEmpty() ? $ultimoAtendimento->solicitacaoExames->map(function ($item) {
+                                                return  $item->resultado ? $item->resultado : 'Exame não encontrado';
                                             })->implode(', ') : 'Nenhum exame') . '<br>
-                                            <br><b>Encaminhamentos</b>: ' . ($ultimoAtendimento->encaminhamentosEspecialidades->isNotEmpty() ? $ultimoAtendimento->encaminhamentosEspecialidades->map(function($item) {
-                                                return $item->especialidades->isNotEmpty() ? $item->especialidades->map(function($esp) {
+                                            <br><b>Encaminhamentos</b>: ' . ($ultimoAtendimento->encaminhamentosEspecialidades->isNotEmpty() ? $ultimoAtendimento->encaminhamentosEspecialidades->map(function ($item) {
+                                                return $item->especialidades->isNotEmpty() ? $item->especialidades->map(function ($esp) {
                                                     return $esp->nome;
                                                 })->implode(', ') : 'Especialidade não encontrada';
                                             })->implode(', ') : 'Nenhum encaminhamento') . '<br>
@@ -156,6 +157,43 @@ class AtendimentoClinicoNewResource extends Resource
                                             ->maxLength(100)
                                             ->nullable()
                                             ->label('Profissão'),
+                                        Forms\Components\Fieldset::make('Endereço')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('endereco_completo')
+                                                    ->required(false)
+                                                    ->maxLength(200)
+                                                    ->label('Endereço Completo')
+                                                    ->columnSpanFull(),
+                                                Forms\Components\Grid::make(['default' => 1, 'md' => 2])
+                                                    ->schema([
+                                                        Forms\Components\Select::make('estado_id')
+                                                            ->label('Estado')
+                                                            ->native(false)
+                                                            ->searchable()
+                                                            ->required(false)
+                                                            ->options(Estado::all()->pluck('nome', 'id')->toArray())
+                                                            ->live(),
+                                                        Forms\Components\Select::make('cidade_id')
+                                                            ->label('Cidade')
+                                                            ->native(false)
+                                                            ->searchable()
+                                                            ->required(false)
+                                                            ->options(function (callable $get) {
+                                                                $estado = Estado::find($get('estado_id'));
+                                                                if (!$estado) {
+                                                                    return [];
+                                                                }
+                                                                return $estado->cidade->pluck('nome', 'id');
+                                                            }),
+                                                        Forms\Components\TextInput::make('telefone')
+                                                            ->required(false)
+                                                            ->maxLength(20)
+                                                            ->mask('(99) 99999-9999')
+                                                            ->label('Telefone'),
+
+                                                    ]),
+                                            ])
+                                            ->columns(['default' => 1, 'md' => 1]),
                                     ]),
                             ]),
                         Forms\Components\DateTimePicker::make('data_hora_atendimento')
@@ -570,10 +608,10 @@ class AtendimentoClinicoNewResource extends Resource
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
                 Tables\Actions\Action::make('Prontuário')
-                        ->icon('heroicon-o-document-text')
-                        ->url(fn(AtendimentoClinico $record) => route('documentos.prontuario', $record))
-                        ->openUrlInNewTab(),
-                
+                    ->icon('heroicon-o-document-text')
+                    ->url(fn(AtendimentoClinico $record) => route('documentos.prontuario', $record))
+                    ->openUrlInNewTab(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
