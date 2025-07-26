@@ -26,6 +26,12 @@ class Medico extends Model
         return $this->hasMany(AtendimentoClinico::class);
     }
 
+    public function documentos()
+    {
+        return $this->hasMany(Documento::class);
+    }
+
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()

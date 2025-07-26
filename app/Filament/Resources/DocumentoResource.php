@@ -36,35 +36,23 @@ class DocumentoResource extends Resource
                                 '2' => 'Atestado',
                                 '3' => 'Receituário',
                                 '4' => 'Encaminhamento',
-                                '5' => 'exames',
+                                '5' => 'Exames',
                                 '6' => 'Orientações',
                                 '7' => 'Outros',
-                            ])
-                            ->live()
-                            ->afterStateUpdated(function (Forms\Set $set, $state) {
-                                if ($state === '1') {
-                                    $set('descricao', '<div style="text-align:center;"><strong>Declaração de Comparecimento</strong></div>');
-                                } elseif ($state === '2') {
-                                    $set('descricao', '<div style="text-align:center;"><strong>Atestado Médico</strong></div>');
-                                } elseif ($state === '3') {
-                                    $set('descricao', '<div style="text-align:center;"><strong>Receituário Médico</strong></div>');
-                                } elseif ($state === '4') {
-                                    $set('descricao', '<div style="text-align:center;"><strong>Encaminhamento Médico</strong></div>');
-                                } elseif ($state === '5') {
-                                    $set('descricao', '<div style="text-align:center;"><strong>Exames Médicos</strong></div>');
-                                } elseif ($state === '6') {
-                                    $set('descricao', '<div style="text-align:center;"><strong>Orientações Médicas</strong></div>');
-                                } elseif ($state === '7') {
-                                    $set('descricao', '<div style="text-align:center;"><strong>Outros Documentos</strong></div>');
-                                }
-                                
-                            })
+                            ])                         
                            
-                            ->default('1')
+                           
+                            ->default('2')
                             ->required(),
                     
                 Forms\Components\Select::make('paciente_id')
                     ->relationship('paciente', 'nome')
+                    ->required(),
+                Forms\Components\Select::make('medico_id')
+                    ->relationship('medico', 'nome')
+                    ->label('Médico Responsável')
+                    
+                    ->default(auth()->user()->id) // Associa o médico logado
                     ->required(),
                 Forms\Components\DateTimePicker::make('data_hora')
                     ->label('Data e Hora')
@@ -72,25 +60,9 @@ class DocumentoResource extends Resource
                     ->required(),
                 Forms\Components\MarkdownEditor::make('descricao')
                     ->columnSpanFull()
-                    // ->disableToolbarButtons([
-                    //         'attachFiles'
-                    //     ])
-                    ->toolbarButtons([
-        'attachFiles',
-        'blockquote',
-        'bold',
-        'bulletList',
-        'codeBlock',
-        'h2',
-        'h3',
-        'italic',
-        'link',
-        'orderedList',
-        'redo',
-        'strike',
-        'underline',
-        'undo',
-    ])
+                    ->disableToolbarButtons([
+                            'attachFiles'
+                        ])                    
                     ->label('Descrição'),
                         
                     ]);
@@ -102,7 +74,36 @@ class DocumentoResource extends Resource
     {
         return $table
             ->columns([
-                //
+                Tables\Columns\TextColumn::make('tipo')
+                    ->label('Tipo')
+                    ->badge()
+                    ->color('info')
+                    ->formatStateUsing(function (string $state): string {
+                        return match ($state) {
+                            '1' => 'Declaração de Comparecimento',
+                            '2' => 'Atestado',
+                            '3' => 'Receituário',
+                            '4' => 'Encaminhamento',
+                            '5' => 'Exames',
+                            '6' => 'Orientações',
+                            '7' => 'Outros',
+                            default => 'Desconhecido',
+                        };
+                    })
+                    ->searchable()
+                    ->sortable(),                    
+                Tables\Columns\TextColumn::make('paciente.nome')
+                    ->label('Paciente')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('medico.nome')
+                    ->label('Médico')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('data_hora')
+                    ->label('Data e Hora')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable(),
             ])
             ->filters([
                 //
@@ -110,6 +111,12 @@ class DocumentoResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('pdf')
+                    ->label('Gerar PDF')
+                    ->icon('heroicon-o-document-text')
+                    ->url(fn (Documento $record) => route('documentos.documento.print', $record))
+                    ->openUrlInNewTab(),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

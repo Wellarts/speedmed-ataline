@@ -27,3 +27,4 @@ Route::get('/documentos/receituarioNew/{id}/print', [App\Http\Controllers\Docume
 Route::get('/documentos/receituarioNewEspecial/{id}/print', [App\Http\Controllers\DocumentosController::class, 'printReceituarioEspecial'])->name('documentos.receituarionewEspecial.print');
 Route::get('/documentos/solicitacaoExames/{id}/print', [App\Http\Controllers\DocumentosController::class, 'printSolicitacaoExames'])->name('documentos.solicitacaoExames.print');
 Route::get('/documentos/encaminhamentos/{id}/print', [App\Http\Controllers\DocumentosController::class, 'printEncaminhamentos'])->name('documentos.encaminhamentos.print');
+Route::get('/documentos/documento/{id}/print', [App\Http\Controllers\DocumentosController::class, 'printDocumento'])->name('documentos.documento.print');

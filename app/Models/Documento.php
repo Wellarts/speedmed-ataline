@@ -20,6 +20,13 @@ class Documento extends Model
     {
         return $this->belongsTo(Paciente::class);
     } 
+
+    public function medico()
+    {
+        return $this->belongsTo(Medico::class);
+    }
+
+
     
     
     

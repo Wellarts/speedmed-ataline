@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Documento;
 use App\Models\AtendimentoClinico;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -168,4 +169,21 @@ public function printEncaminhamentos($id)
 
         
     }
+
+    public function printDocumento($id)
+    {
+        // Carrega o documento com os relacionamentos de paciente e médico
+        $documento = Documento::with(['paciente', 'medico'])->findOrFail($id);
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('documentos.documento', compact('documento'))
+            ->setPaper('a4', 'portrait')
+            ->setOption('isHtml5ParserEnabled', true)
+            ->setOption('isPhpEnabled', true)
+            ->setOption('isRemoteEnabled', true);
+
+        // Gera um nome de arquivo amigável
+        $filename = \Illuminate\Support\Str::slug('documento-' . $documento->id . '-' . $documento->paciente->nome) . '.pdf';
+        return $pdf->stream($filename, ['Attachment' => false]);
+    }
+
 }
