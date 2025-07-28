@@ -43,7 +43,7 @@ class AtendimentoClinicoNewResource extends Resource
                         Forms\Components\Select::make('medico_id')
                             ->label('Médico')
                             ->relationship('medico', 'nome')
-                            ->default(auth()->user()->id)
+                            ->default('1')
                             ->searchable()
                             ->required(),
 
