@@ -63,26 +63,33 @@ class AtendimentoClinicoNewResource extends Resource
                                     ->first();
 
                                 if ($ultimoAtendimento) {
+                                    $receituario = optional($ultimoAtendimento->receituario)->isNotEmpty() ? $ultimoAtendimento->receituario->map(function ($item) {
+                                        return $item->medicamento ? $item->medicamento->nome : 'Medicamento não encontrado';
+                                    })->implode(', ') : 'Nenhum medicamento';
+
+                                    $solicitacaoExames = optional($ultimoAtendimento->solicitacaoExames)->isNotEmpty() ? $ultimoAtendimento->solicitacaoExames->map(function ($item) {
+                                        return $item->resultado ? $item->resultado : 'Exame não encontrado';
+                                    })->implode(', ') : 'Nenhum exame';
+
+                                    // --- Corrected Encaminhamentos Logic ---
+                                    $encaminhamentos = optional($ultimoAtendimento->encaminhamento)->isNotEmpty()
+                                        ? $ultimoAtendimento->encaminhamento->map(function ($item) {
+                                            // Check if the single 'especialidade' model exists before accessing its 'nome'
+                                            return $item->especialidade ? $item->especialidade->nome : 'Especialidade não encontrada';
+                                        })->implode(', ')
+                                        : 'Nenhum encaminhamento';
+                                    // ------------------------------------
+
                                     Notification::make()
                                         ->title('Último atendimento')
                                         ->body(
                                             '<b>Data</b>: ' . $ultimoAtendimento->data_hora_atendimento->format('d/m/Y') . '<br>
-                                            <br><b>Queixa principal</b>: ' . $ultimoAtendimento->qp . '<br>
-                                            <br><b>História Clínica</b>: ' . $ultimoAtendimento->hdp . '<br>
-                                            <br><b>Receituário</b>: ' . ($ultimoAtendimento->receituario->isNotEmpty() ? $ultimoAtendimento->receituario->map(function ($item) {
-                                                return $item->medicamento ? $item->medicamento->nome : 'Medicamento não encontrado';
-                                            })->implode(', ') : 'Nenhum medicamento') . '<br>
-                                            <br><b>Exames Solicitados</b>: ' . ($ultimoAtendimento->solicitacaoExames->isNotEmpty() ? $ultimoAtendimento->solicitacaoExames->map(function ($item) {
-                                                return  $item->resultado ? $item->resultado : 'Exame não encontrado';
-                                            })->implode(', ') : 'Nenhum exame') . '<br>
-                                            <br><b>Encaminhamentos</b>: ' . ($ultimoAtendimento->encaminhamentosEspecialidades->isNotEmpty() ? $ultimoAtendimento->encaminhamentosEspecialidades->map(function ($item) {
-                                                return $item->especialidades->isNotEmpty() ? $item->especialidades->map(function ($esp) {
-                                                    return $esp->nome;
-                                                })->implode(', ') : 'Especialidade não encontrada';
-                                            })->implode(', ') : 'Nenhum encaminhamento') . '<br>
-                                            <br><b>Evolução</b>: ' . $ultimoAtendimento->evolucao . '<br>'
-
-
+                                                <br><b>Queixa principal</b>: ' . $ultimoAtendimento->qp . '<br>
+                                                <br><b>História Clínica</b>: ' . $ultimoAtendimento->hdp . '<br>
+                                                <br><b>Receituário</b>: ' . $receituario . '<br>
+                                                <br><b>Exames Solicitados</b>: ' . $solicitacaoExames . '<br>
+                                                <br><b>Encaminhamentos</b>: ' . $encaminhamentos . '<br>
+                                                <br><b>Evolução</b>: ' . $ultimoAtendimento->evolucao . '<br>'
                                         )
                                         ->info()
                                         ->persistent()
@@ -626,7 +633,7 @@ class AtendimentoClinicoNewResource extends Resource
             ReceituarioRelationManager::class,
             SolicitacaoExameRelationManager::class,
             EncaminhamentoRelationManager::class,
-            
+
         ];
     }
 
