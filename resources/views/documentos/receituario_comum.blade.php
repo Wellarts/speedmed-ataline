@@ -56,9 +56,10 @@
 <body>
     <div class="container">
         <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image" alt="Receituário Comum"/>
-        <div style="position: absolute; top: 30%; left: 10%; transform: translateY(-50%); font-size: 16px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
-                <p<b>Paciente:</b> {{ $prescricao->paciente->nome }}</p>
-            </div>
+        <div style="position: absolute; top: 20%; left: 10%; transform: translateY(-50%); font-size: 16px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
+                    Paciente: {{ $atendimento->paciente->nome }} <br>
+                    CPF: {{ $atendimento->paciente->cpf }} <br>
+        </div>
        
         <div class="centered-prescricao">
             <p>{!! nl2br(implode("\n", array_map(function($item, $index) { return ($index + 1) . '. ' . trim($item); }, explode(",", $prescricao->medicamentos_detalhes), range(0, substr_count($prescricao->medicamentos_detalhes, ','))))) !!}</p>

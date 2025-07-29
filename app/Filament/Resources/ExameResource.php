@@ -12,6 +12,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Filters\Filter;
 
 class ExameResource extends Resource
 {
@@ -68,7 +69,11 @@ class ExameResource extends Resource
                     ->color('info')
             ])
             ->filters([
-                //
+                Filter::make('Laboratorial')
+                    ->query(fn(Builder $query): Builder => $query->where('tipo', 'Laboratorial')),
+                Filter::make('Imagem')
+                    ->query(fn(Builder $query): Builder => $query->where('tipo', 'Imagem')),
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

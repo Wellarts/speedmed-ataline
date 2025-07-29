@@ -14,6 +14,8 @@ class EncaminhamentoRelationManager extends RelationManager
 {
     protected static string $relationship = 'Encaminhamento';
 
+    protected static ?string $title = 'Encaminhamentos';
+
     public function form(Form $form): Form
     {
         return $form
@@ -52,7 +54,10 @@ class EncaminhamentoRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->label('Adicionar Encaminhamento')
+                    ->icon('heroicon-o-plus')
+                    ->modalHeading('Adicionar Encaminhamentos'),                    
                 Tables\Actions\Action::make('print')
                     ->label('Imprimir Encaminhamento')
                     ->icon('heroicon-o-printer')

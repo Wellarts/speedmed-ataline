@@ -28,7 +28,7 @@
             top: 25%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 24px;
+            font-size: 216px;
             font-weight: bold;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             color: #666666;
@@ -40,7 +40,7 @@
             top: 40%;
             left: 5%;
             transform: translateY(-50%);
-            font-size: 16px;
+            font-size: 14px;
             text-align: left;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             color: #666666;
@@ -58,15 +58,16 @@
 <body>
     <div class="container">
         <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image" alt="Receituário Comum"/>
-        <div style="position: absolute; top: 20%; left: 50%; transform: translateY(-50%); font-size: 16px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
-               Paciente: {{ $atendimento->paciente->nome }} <br>
+        <div style="position: absolute; top: 20%; left: 10%; transform: translateY(-50%); font-size: 16px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
+                    Paciente: {{ $atendimento->paciente->nome }} <br>
+                    CPF: {{ $atendimento->paciente->cpf }} <br>
         </div>
        
         <div class="centered-prescricao">
             @foreach($medicamentoReceituarioComum as $medicamento)
                 <table style="width: 100%">
                     <tr>                        <td style="text-align: left; width: 30%;"><b>{{ $medicamento->medicamento->nome }}</b></td>
-                        <td style="text-align: center; width: 40%;">_________________________________________</td>
+                        <td style="text-align: center; width: 40%;">_______________________________________________</td>
                         <td style="text-align: left; width: 30%;"><b>{{ $medicamento->qtd }}</b></td>
                     </tr>
                     <tr>

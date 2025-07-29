@@ -12,6 +12,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Tables\Filters\Filter;
+
+
 
 class MedicamentoResource extends Resource
 {
@@ -77,7 +80,14 @@ class MedicamentoResource extends Resource
                 
             ])
             ->filters([
-                //
+                Filter::make('Alergia')
+                    ->query(fn(Builder $query): Builder => $query->where('alergia', true)),
+                Filter::make('Uso Contínuo')
+                    ->query(fn(Builder $query): Builder => $query->where('uso_continuo', true)),
+                Filter::make('Controle Especial')
+                    ->query(fn(Builder $query): Builder => $query->where('controle_especial', true)),
+
+
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -42,7 +42,7 @@
             top: 40%;
             left: 5%;
             transform: translateY(-50%);
-            font-size: 20px;
+            font-size: 16px;
             text-align: left;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             color: #666666;
@@ -58,13 +58,13 @@
         }
 
         .exame-item {
-            font-size: 20px;
+            font-size: 16px;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             color: #666666;
             margin-top: 10px;
         }
         .descricao-item {
-            font-size: 18px;
+            font-size: 16px;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             color: #666666;
             margin-top: 10px;
@@ -77,11 +77,10 @@
     @if ($listaEncaminhamentos && count($listaEncaminhamentos) > 0)
         @foreach ($listaEncaminhamentos as $encaminhamento)
             <div class="container" @if (!$loop->last) style="page-break-after: always;" @endif>
-                <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image"
-                    alt="Receituário Comum" />
-                <div
-                    style="position: absolute; top: 20%; left: 5%; transform: translateY(-50%); font-size: 22px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
+                <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image" alt="Receituário Comum" />
+                <div style="position: absolute; top: 20%; left: 10%; transform: translateY(-50%); font-size: 16px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
                     Paciente: {{ $atendimento->paciente->nome }} <br>
+                    CPF: {{ $atendimento->paciente->cpf }} <br>
                 </div>
                 <div class="centered-prescricao">
                     <p><b>Encaminhamento:</b></p>
