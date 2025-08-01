@@ -30,7 +30,7 @@
             padding: 20px;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            page-break-after: always;
+            
         }
 
         .header-section {
@@ -177,7 +177,8 @@
         .signature-box {
             display: inline-block;
             text-align: center;
-            margin-top: 15px;
+            margin-top: 100px;
+            padding: 10
         }
 
         .signature-line {

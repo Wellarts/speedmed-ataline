@@ -63,6 +63,7 @@
             color: #666666;
             margin-top: 10px;
         }
+
         .descricao-item {
             font-size: 16px;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -73,12 +74,14 @@
 </head>
 
 <body>
-    
+
     @if ($listaEncaminhamentos && count($listaEncaminhamentos) > 0)
         @foreach ($listaEncaminhamentos as $encaminhamento)
             <div class="container" @if (!$loop->last) style="page-break-after: always;" @endif>
-                <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image" alt="Receituário Comum" />
-                <div style="position: absolute; top: 20%; left: 10%; transform: translateY(-50%); font-size: 16px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
+                <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image"
+                    alt="Receituário Comum" />
+                <div
+                    style="position: absolute; top: 20%; left: 10%; transform: translateY(-50%); font-size: 16px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
                     Paciente: {{ $atendimento->paciente->nome }} <br>
                     CPF: {{ $atendimento->paciente->cpf }} <br>
                 </div>
@@ -88,7 +91,7 @@
                         • {{ $encaminhamento->especialidade->nome ?? '' }}
                     </div>
                     <div class="descricao-item">
-                        <b>Motivo:</b> {{ $encaminhamento->descricao ?? 'Nenhuma descrição fornecida.' }}    
+                        <b>Motivo:</b> {{ $encaminhamento->descricao ?? 'Nenhuma descrição fornecida.' }}
                     </div>
                 </div>
                 <div class="data">
@@ -116,8 +119,7 @@
                 <p>Nenhum encaminhamento solicitado.</p>
             </div>
             <div class="data">{{ \Carbon\Carbon::now()->locale('pt_BR')->isoFormat('D [de] MMMM [de] YYYY') }}</div>
-            <div
-                style="position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); text-align: center; color: #666666; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
+            <div style="position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); text-align: center; color: #666666; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
                 <div style="border-top: 1px solid #666666; padding-top: 5px; width: 250px;">
                     Dr(a). {{ $atendimento->medico->nome }} <br>
                     CRM: {{ $atendimento->medico->crm }}
