@@ -32,17 +32,21 @@ class SolicitacaoExameRelationManager extends RelationManager
                     ->getOptionLabelFromRecordUsing(fn($record) => $record->nome . ' (' . $record->tipo . ')')
                     ->required()
                     ->live()
-                    ->afterStateUpdated(function ($state, $set) {
+                    ->afterStateUpdated(function ($state, $set, $livewire) {
                         if (!empty($state)) {
                             $exames = Exame::whereIn('id', $state)->pluck('nome')->map(function ($nome) {
                                 return $nome . ':';
                             })->implode("\n");
-                            $set('resultado', $exames);
+                           
+                            $livewire->ownerRecord->resultado_exames = $exames;
+                            $livewire->ownerRecord->save();
+
                         }
                     })
                     ->preload()
-                    ->searchable('nome')
+                    ->searchable()
                     ->multiple()
+                    ->columnSpanFull()
                     ->createOptionForm([
                         Grid::make(2)
                             ->schema([
@@ -65,11 +69,7 @@ class SolicitacaoExameRelationManager extends RelationManager
                             ]),
                     ]),
                        
-                Forms\Components\Textarea::make('resultado')
-                    ->autosize()
-                    ->label('Resultado'),
-
-
+                
 
 
             ]);

@@ -47,15 +47,19 @@ class AtendimentoClinico extends Model
         'obs_exame_fisico',
         'hipotese_diagnostica_id',
         'hipotese_diagnostica_detalhes',        
-        'orientacoes',
+        'conduta',
         'evolucao',
+        'data_hora_retorno',
         'status',
         'anexos_resultados',
+        'anexos_pre_exames',
+        'resultado_exames',
     ];
 
     protected $casts = [
         'data_hora_atendimento' => 'datetime',        
         'anexos_resultados' => 'json',
+        'anexos_pre_exames' => 'json',        
         'doenca_preexistente' => 'array',
         'hipotese_diagnostica_id' => 'array',
        

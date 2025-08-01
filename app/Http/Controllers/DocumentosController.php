@@ -11,36 +11,42 @@ use Illuminate\Http\Request;
 class DocumentosController extends Controller
 {
     public function prontuario($id)
-        {
-            // dd($id);
-            $prontuario = AtendimentoClinico::with([
-                'receituario.medicamento',
-                'solicitacaoExames.exames',
-                'encaminhamentosEspecialidades.especialidades'
-            ])->find($id);
-            
-            if (!$prontuario) {
-                abort(404);
-            }
-    
-            // Otimização das consultas para diagnósticos
-            $nomeDiagnosticos = [];
-            if (!empty($prontuario->hipotese_diagnostica_id) && is_array($prontuario->hipotese_diagnostica_id)) {
-                $diagnosticos = \App\Models\Doenca::whereIn('id', $prontuario->hipotese_diagnostica_id)->pluck('nome', 'id')->toArray();
-                foreach ($prontuario->hipotese_diagnostica_id as $diagnosticoId) {
-                    $nomeDiagnosticos[] = $diagnosticos[$diagnosticoId] ?? 'Diagnóstico não encontrado';
-                }
-            }
+    {
+        $prontuario = AtendimentoClinico::with([
+            'paciente',
+            'medico',
+            'receituario.medicamento',
+            'encaminhamento.especialidade'
+        ])->find($id);
 
-        $pdf = Pdf::loadView('documentos.prontuario', compact('prontuario', 'nomeDiagnosticos'))
+        if (!$prontuario) {
+            abort(404);
+        }
+
+        // Diagnósticos
+        $nomeDiagnosticos = [];
+        if (!empty($prontuario->hipotese_diagnostica_id) && is_array($prontuario->hipotese_diagnostica_id)) {
+            $diagnosticos = \App\Models\Doenca::whereIn('id', $prontuario->hipotese_diagnostica_id)->pluck('nome', 'id')->toArray();
+            foreach ($prontuario->hipotese_diagnostica_id as $diagnosticoId) {
+                $nomeDiagnosticos[] = $diagnosticos[$diagnosticoId] ?? 'Diagnóstico não encontrado';
+            }
+        }
+
+        // Encaminhamentos
+        $listaEncaminhamentos = $prontuario->encaminhamento;
+
+        // Receituário
+        $receituario = $prontuario->receituario;
+
+        // Exames
+        $solicitacaoExames = $prontuario->solicitacaoExames;
+
+        $pdf = Pdf::loadView('documentos.prontuario', compact('prontuario', 'nomeDiagnosticos', 'receituario', 'listaEncaminhamentos'))
             ->setPaper('a4', 'portrait')
             ->setOption('isHtml5ParserEnabled', true)
             ->setOption('isPhpEnabled', true)
             ->setOption('isRemoteEnabled', true);
         return $pdf->stream('prontuario.pdf', ['Attachment' => false]);
-
-
-        
     }
 
     public function receituarioComum($id)
