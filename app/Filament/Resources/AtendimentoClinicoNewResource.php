@@ -703,9 +703,8 @@ class AtendimentoClinicoNewResource extends Resource
                             'evolucao' => $record->evolucao,
                             'anexos_resultados' => $record->anexos_resultados,
                             'data_hora_retorno' => $record->data_hora_retorno,
-                            'resultado_exames' => $record->resultado_exames,
-                            
-                          //  'status' => $record->status,
+                            'resultado_exames' => $record->resultado_exames,                            
+                            'status' => $record->status,
                         ]);
                     })
                     ->action(function (AtendimentoClinico $record, array $data) {
