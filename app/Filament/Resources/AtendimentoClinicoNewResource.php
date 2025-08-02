@@ -577,9 +577,9 @@ class AtendimentoClinicoNewResource extends Resource
                                     ->inline()
                                     ->visible(fn($context) => $context == 'edit')
                                     ->options([
-                                        '1' => 'Iniciada',
-                                        '2' => 'Finalizada',
-                                        '0' => 'Cancelada',
+                                        '1' => 'Iniciado',
+                                        '2' => 'Finalizado',
+                                        '0' => 'Cancelado',
                                     ])
                                     ->icons([
                                         '1' => 'heroicon-o-check-circle',
@@ -616,9 +616,9 @@ class AtendimentoClinicoNewResource extends Resource
                     ->label('Status')
                     ->alignCenter()
                     ->formatStateUsing(fn($state) => match ($state) {
-                        '1' => 'Iniciada',
-                        '2' => 'Finalizada',
-                        '0' => 'Cancelada',
+                        '1' => 'Iniciado',
+                        '2' => 'Finalizado',
+                        '0' => 'Cancelado',
                     })
                     ->badge()
                     ->color(fn($state) => match ($state) {
@@ -649,15 +649,16 @@ class AtendimentoClinicoNewResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                
                 Tables\Actions\Action::make('Prontuário')
                     ->icon('heroicon-o-document-text')
+                    ->color('info')
                     ->url(fn(AtendimentoClinico $record) => route('documentos.prontuario', $record))
                     ->openUrlInNewTab(),
                 Tables\Actions\Action::make('retorno_consulta')
                     ->icon('heroicon-o-check')
-                    ->label('Finalizar Atendimento')
-                    ->color('info')
+                    ->label(fn($record) => $record->status == '2' ? 'Atendimento Finalizado' : 'Finalizar Atendimento' )
+                    ->color(fn($record) => $record->status == '2' ? 'success' : 'info')
                     ->modalHeading('Finalização do Atendimento')
                     ->form([
                         Forms\Components\Textarea::make('evolucao')
@@ -681,9 +682,9 @@ class AtendimentoClinicoNewResource extends Resource
                             ->inline()
                             ->default('2')
                             ->options([
-                                '1' => 'Iniciada',
-                                '2' => 'Finalizada',
-                                '0' => 'Cancelada',
+                                '1' => 'Iniciado',
+                                '2' => 'Finalizado',
+                                '0' => 'Cancelado',
                             ])
                             ->icons([
                                 '1' => 'heroicon-o-check-circle',
@@ -715,6 +716,7 @@ class AtendimentoClinicoNewResource extends Resource
                             'status' => $data['status'] ?? $record->status,
                         ]);
                     }),
+                    Tables\Actions\DeleteAction::make(),
 
             ])
             ->bulkActions([

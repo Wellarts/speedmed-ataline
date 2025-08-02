@@ -30,7 +30,7 @@
             padding: 20px;
             box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
             border-radius: 8px;
-            
+
         }
 
         .header-section {
@@ -290,20 +290,7 @@
             <h2>Avaliação Médica</h2>
             <table>
                 <tr>
-                    <td style="width: 33%;">
-                        <div class="field-pair">
-                            <span class="label">Tipo de Atendimento:</span>
-                            <span class="value">{{ $prontuario->tipo_atendimento ?? 'Não informado' }}</span>
-                        </div>
-                    </td>
-                    <td style="width: 33%;">
-                        <div class="field-pair">
-                            <span class="label">Data/Hora:</span>
-                            <span
-                                class="value">{{ $prontuario->data_hora_atendimento ? $prontuario->data_hora_atendimento->format('d/m/Y H:i') : 'Não informado' }}</span>
-                        </div>
-                    </td>
-                    <td style="width: 33%;">
+                    <td colspan="3">
                         <div class="field-pair">
                             <span class="label">Queixa Principal:</span>
                             <span class="value">{{ $prontuario->qp ?? 'Não informado' }}</span>
@@ -319,20 +306,23 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="width: 50%">
                         <div class="field-pair">
-                            <span class="label">Doenças Pré-existentes:</span>
-                            <span
-                                class="value">{{ is_array($prontuario->doenca_preexistente) ? implode(', ', $prontuario->doenca_preexistente) : $prontuario->doenca_preexistente ?? 'Não informado' }}</span>
+                            <?php
+                            $doencasString = $prontuario->data_inicio_sintomas ?? '';
+                            $doencasArray = array_map('trim', preg_split('/\r?\n/', $doencasString, -1, PREG_SPLIT_NO_EMPTY));
+                            ?>
+                            <span class="label">Doenças Preexistentes:</span>
+                            <span class="value">
+                                <ul>
+                                    <?php foreach ($doencasArray as $doenca): ?>
+                                    <li><?php echo htmlspecialchars($doenca); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </span>
                         </div>
                     </td>
-                    <td>
-                        <div class="field-pair">
-                            <span class="label">Data Início dos Sintomas:</span>
-                            <span class="value">{{ $prontuario->data_inicio_sintomas ?? 'Não informado' }}</span>
-                        </div>
-                    </td>
-                    <td>
+                    <td style="width: 50%">
                         <div class="field-pair">
                             <span class="label">Cirurgias/Hospitalizações:</span>
                             <span class="value">{{ $prontuario->cirurgias_hospitalizacoes ?? 'Não informado' }}</span>
@@ -340,18 +330,29 @@
                     </td>
                 </tr>
                 <tr>
+                    <td style="width: 50%">
+                        <div class="field-pair">
+                            <?php
+                                $medicamentosString = $prontuario->medicamento_uso_detalhes ?? '';
+                                $medicamentosArray = array_map('trim', preg_split('/\r?\n/', $medicamentosString, -1, PREG_SPLIT_NO_EMPTY));
+                            ?>
+                            <span class="label">Medicamentos em Uso:</span>
+                            <span class="value">
+                                <ul>
+                                    <?php foreach ($medicamentosArray as $medicamento): ?>
+                                    <li><?php echo htmlspecialchars($medicamento); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </span>
+                        </div>
+                    </td>
                     <td>
                         <div class="field-pair">
                             <span class="label">Alergias:</span>
                             <span class="value">{{ $prontuario->outros_alergias ?? 'Não informado' }}</span>
                         </div>
                     </td>
-                    <td colspan="2">
-                        <div class="field-pair">
-                            <span class="label">Medicamentos em Uso:</span>
-                            <span class="value">{{ $prontuario->medicamento_uso_detalhes ?? 'Não informado' }}</span>
-                        </div>
-                    </td>
+
                 </tr>
             </table>
         </div>
@@ -360,7 +361,7 @@
             <h2>Estilo de Vida</h2>
             <table>
                 <tr>
-                    <td style="width: 33%;">
+                    <td style="width: 20%;">
                         <div class="field-pair">
                             <span class="label">Tabagismo:</span>
                             <span class="value">
@@ -369,30 +370,29 @@
 
                         </div>
                     </td>
-                    <td style="width: 33%;">
+                    <td style="width: 20%;">
                         <div class="field-pair">
                             <span class="label">Alcoolismo:</span>
                             <span
                                 class="value">{{ $prontuario->alcoolismo === 1 ? 'Sim' : ($prontuario->alcoolismo === 0 ? 'Não' : 'Não informado') }}</span>
                         </div>
                     </td>
-                    <td style="width: 33%;">
+                    <td style="width: 20%;">
                         <div class="field-pair">
                             <span class="label">Drogas:</span>
                             <span
                                 class="value">{{ $prontuario->drogas === 1 ? 'Sim' : ($prontuario->drogas === 0 ? 'Não' : 'Não informado') }}</span>
                         </div>
                     </td>
-                </tr>
-                <tr>
-                    <td>
+                
+                    <td style="width: 20%;">
                         <div class="field-pair">
                             <span class="label">Atividade Física:</span>
                             <span
                                 class="value">{{ $prontuario->atividade_fisica === 1 ? 'Sim' : ($prontuario->atividade_fisica === 0 ? 'Não' : 'Não informado') }}</span>
                         </div>
                     </td>
-                    <td>
+                    <td style="width: 20%;">
                         <div class="field-pair">
                             <span class="label">Dieta:</span>
                             <span
@@ -401,7 +401,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan="3">
+                    <td colspan="5">
                         <div class="field-pair">
                             <span class="label">Observações:</span>
                             <span class="value">{{ $prontuario->obs_estilo_vida ?? 'Não informado' }}</span>
@@ -515,7 +515,7 @@
             <h2>Conduta e Evolução</h2>
             <table>
                 <tr>
-                    <td>
+                    <td colspan="2">
                         <div class="field-pair">
                             <span class="label">Conduta:</span>
                             <span class="value">{{ $prontuario->conduta ?? 'Não informado' }}</span>
@@ -523,10 +523,16 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="width: 70%">
                         <div class="field-pair">
                             <span class="label">Evolução:</span>
                             <span class="value">{{ $prontuario->evolucao ?? 'Não informado' }}</span>
+                        </div>
+                    </td>
+                    <td style="width: 30%">
+                        <div class="field-pair">
+                            <span class="label">Data da Evolução:</span>
+                            <span class="value">{{ \Carbon\Carbon::parse($prontuario->data_hora_retorno)->format('d/m/Y H:i') }}</span>
                         </div>
                     </td>
                 </tr>
@@ -565,12 +571,23 @@
             <h2>Exames Solicitados e Resultados</h2>
             <table>
                 <tr>
-                    <td>
+                    <td style="width: 50%">
                         <div class="field-pair">
-                            <span class="label">Observações:</span>
-                            <span class="value">{{ $prontuario->resultado_exames ?? 'Não informado' }}</span>
+                            <?php
+                                $examesString = $prontuario->resultado_exames ?? '';
+                                $examesArray = array_map('trim', preg_split('/\r?\n/', $examesString, -1, PREG_SPLIT_NO_EMPTY));
+                            ?>
+                            <span class="label">Exames</span>
+                            <span class="value">
+                                <ul>
+                                    <?php foreach ($examesArray as $exame): ?>
+                                    <li><?php echo htmlspecialchars($exame); ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </span>
                         </div>
                     </td>
+                    <td>
                 </tr>
             </table>
         </div>
@@ -614,4 +631,5 @@
         </div>
     </div>
 </body>
+
 </html>
