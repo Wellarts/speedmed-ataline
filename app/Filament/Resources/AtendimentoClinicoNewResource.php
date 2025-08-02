@@ -710,7 +710,7 @@ class AtendimentoClinicoNewResource extends Resource
                     ->action(function (AtendimentoClinico $record, array $data) {
                         $record->update([
                             'anexos_resultados' => $data['anexos_resultados'] ?? $record->anexos_resultados,
-                            'evolucao' => $data['evolucao'] ?? $record->evolucao,
+                            'evolucao' => $data['evolucao'],
                             'data_hora_retorno' => $data['data_hora_retorno'] ?? $record->data_hora_retorno,
                             'status' => $data['status'] ?? $record->status,
                         ]);
