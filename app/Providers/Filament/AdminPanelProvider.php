@@ -32,12 +32,12 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->darkMode(false)
-            ->favicon(asset('img/logo_speedmed.png'))
-            ->brandLogo(asset('img/logo_speedmed.png'))
-            ->brandLogoHeight('4rem')
+            ->favicon(asset('img/logo.png'))
+            ->brandLogo(asset('img/logo.png'))
+            ->brandLogoHeight('5rem')
             ->login()
             ->colors([
-                'primary' => '#04c6c6ff',
+                'primary' => '#c9327dff',
                 
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
