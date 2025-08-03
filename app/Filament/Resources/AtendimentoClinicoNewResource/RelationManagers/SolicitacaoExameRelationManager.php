@@ -85,8 +85,10 @@ class SolicitacaoExameRelationManager extends RelationManager
                     ->bulleted(),
                 Tables\Columns\TextColumn::make('exames.tipo')
                     ->label('Tipo')
+                    ->badge()
+                    ->alignCenter()
                     ->listWithLineBreaks()
-                    ->bulleted(),
+                    
             ])
             ->filters([
                 //
