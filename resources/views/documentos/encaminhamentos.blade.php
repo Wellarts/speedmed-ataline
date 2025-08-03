@@ -20,7 +20,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 0;
-            opacity: 0.5;
+           /* opacity: 0.5;
             /* Adjust opacity for background image */
         }
 

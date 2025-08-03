@@ -19,7 +19,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 0;
-            opacity: 0.5; /* Adjust opacity for background image */
+           /* opacity: 0.5; /* Adjust opacity for background image */
         }
         
         .centered-text {
@@ -31,7 +31,7 @@
             font-size: 216px;
             font-weight: bold;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: #666666;
+            color: #313131;
         }
 
         .centered-prescricao {
@@ -43,7 +43,7 @@
             font-size: 14px;
             text-align: left;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: #666666;
+            color: #313131;
         }
         .data {
          
@@ -51,14 +51,14 @@
             text-align: center;
             font-size: 16px;
             font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            color: #666666;
+            color: #313131;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <img src="{{ public_path('img/receituario_comum.jpg') }}" class="background-image" alt="Receituário Comum"/>
-        <div style="position: absolute; top: 20%; left: 10%; transform: translateY(-50%); font-size: 16px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #666666;">
+        <div style="position: absolute; top: 20%; left: 10%; transform: translateY(-50%); font-size: 16px; text-align: left; font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; color: #313131;">
                     Paciente: {{ $atendimento->paciente->nome }} <br>
                     CPF: {{ $atendimento->paciente->cpf }} <br>
         </div>
