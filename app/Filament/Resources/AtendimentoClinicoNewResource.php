@@ -20,6 +20,7 @@ use App\Models\Medicamento;
 use App\Models\SolicitacaoExame;
 use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Forms\Components\Modal;
 
 class AtendimentoClinicoNewResource extends Resource
 {
@@ -429,7 +430,22 @@ class AtendimentoClinicoNewResource extends Resource
                                     'lg' => 4,
                                 ])->schema([
                                     Forms\Components\DatePicker::make('dum')
-                                        ->label('DUM'),
+                                        ->label('DUM')
+                                        ->visible(function ($get, $record) {
+                                                // Se estiver editando um registro existente
+                                                if ($record && $record->paciente) {
+                                                    return $record->paciente->genero == 2;
+                                                }
+                                                
+                                                // Se estiver criando um novo registro
+                                                $pacienteId = $get('paciente_id');
+                                                if (!$pacienteId) {
+                                                    return false;
+                                                }
+                                                
+                                                $paciente = \App\Models\Paciente::find($pacienteId);
+                                                return $paciente && $paciente->genero == 2;
+                                            }),
                                     Forms\Components\TextInput::make('pa')
                                         ->label('PA(mmHg)'),
                                     Forms\Components\TextInput::make('peso')
