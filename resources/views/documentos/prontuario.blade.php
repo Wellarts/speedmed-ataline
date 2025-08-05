@@ -563,7 +563,7 @@
                     @if ($receituario && $receituario->count() > 0)
                         @foreach ($receituario as $item)
                             <tr>
-                                <td>{{ $item->medicamento->nome ?? 'Não informado' }}</td>
+                                <td>{{ $item->medicamento->nome ?? 'Não informado' }} {{ $item->dosagem  ?? 'Não informado' }}</td>
                                 <td>{{ $item->qtd ?? 'Não informado' }}</td>
                                 <td>{{ $item->forma_uso ?? 'Não informado' }}</td>
                             </tr>

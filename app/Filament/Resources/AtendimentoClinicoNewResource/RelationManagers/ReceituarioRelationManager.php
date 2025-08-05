@@ -44,12 +44,13 @@ class ReceituarioRelationManager extends RelationManager
                                         Forms\Components\TextInput::make('nome')
                                             ->label('Nome')
                                             ->required()
+                                            ->columnSpan([
+                                                'lg' => 3,
+                                                'xl' => 3,
+                                                '2xl' => 3,
+                                            ])
                                             ->maxLength(255)
-                                            ->unique(ignoreRecord: true),
-                                        Forms\Components\TextInput::make('principio_ativo')
-                                            ->label('Princípio Ativo')
-                                            ->required()
-                                            ->maxLength(255),
+                                            ->unique(ignoreRecord: true),                                        
                                         Forms\Components\Checkbox::make('alergia')
                                             ->label('Alergia')
                                             ->default(false),

@@ -62,6 +62,7 @@
             flex: 1;
             min-width: 45%;
             padding: 10px;
+            box-sizing: border-box;
         }
 
         .patient-info h3,
@@ -170,10 +171,11 @@
                 <td style="width: 70%; text-align: right">
                     <h4>RECEITUÁRIO DE CONTROLE ESPECIAL</h4>
                     <div class="clinic-info">
-                        <p>Nome da Clínica/Hospital</p>
-                        <p>Endereço Completo</p>
-                        <p>Telefone: (XX) XXXX-XXXX</p>
-                        <p>CNPJ: XX.XXX.XXX/XXXX-XX</p>
+                        <p>Clínica Unimaia</p>
+                        <p>Rua Major Capitú, 75 - Centro<br>
+                             Lajedo - PE  CEP: 55385000</p>
+                        <p>Telefone: (81) 98800-7298</p>
+                        
                     </div>
                 </td>
             </tr>
@@ -202,8 +204,8 @@
         @foreach ($medicamentoReceituarioEspecial as $medicamento)
             <table style="width: 100%; font-size: 9pt">
                 <tr>
-                    <td style="text-align: left; width: 30%;"><b>{{ $medicamento->medicamento->nome }}</b></td>
-                    <td style="text-align: center; width: 40%;">________________________________________________________
+                    <td style="text-align: left; width: 30%;"><b>{{ $medicamento->medicamento->nome }} {{ $medicamento->dosagem }}</b></td>
+                    <td style="text-align: center; width: 40%;">______________________________________________________
                     </td>
                     <td style="text-align: left; width: 30%;"><b>{{ $medicamento->qtd }}</b></td>
                 </tr>
@@ -217,8 +219,8 @@
     <div class="bottom-fixed-container">
         <table style="width: 100%;">
             <tr>
-                <td style="width: 50%;">
-                    <div class="pharmacy-info">
+                <td style="width: 50%; vertical-align: top;">
+                    <div class="pharmacy-info" style="height: 140px; display: flex; flex-direction: column; justify-content: space-between;">
                         <h3>Identificação da Farmácia</h3>
                         <p>Nome da Farmácia:__________________________</p>
                         <p>CNPJ: ____________________________________ </p>
@@ -226,8 +228,8 @@
                         <p>CRF: _____________________________________ </p>
                     </div>
                 </td>
-                <td style="width: 50%;">
-                    <div class="pharmacy-info">
+                <td style="width: 50%; vertical-align: top;">
+                    <div class="pharmacy-info" style="height: 140px; display: flex; flex-direction: column; justify-content: space-between;">
                         <h3>Comprador</h3>
                         <p>Nome: _________________________________</p>
                         <p>RG: _________________ Emissor: __________</p>
@@ -279,10 +281,10 @@
                 <td style="width: 70%; text-align: right">
                     <h4>RECEITUÁRIO DE CONTROLE ESPECIAL</h4>
                     <div class="clinic-info">
-                        <p>Nome da Clínica/Hospital</p>
-                        <p>Endereço Completo</p>
-                        <p>Telefone: (XX) XXXX-XXXX</p>
-                        <p>CNPJ: XX.XXX.XXX/XXXX-XX</p>
+                       <p>Clínica Unimaia</p>
+                        <p>Rua Major Capitú, 75 - Centro<br>
+                             Lajedo - PE  CEP: 55385000</p>
+                        <p>Telefone: (81) 98800-7298</p>
                     </div>
                 </td>
             </tr>
@@ -325,9 +327,9 @@
 
     <div class="bottom-fixed-container">
         <table style="width: 100%;">
-            <tr>
-                <td style="width: 50%;">
-                    <div class="pharmacy-info">
+             <tr>
+                <td style="width: 50%; vertical-align: top;">
+                    <div class="pharmacy-info" style="height: 140px; display: flex; flex-direction: column; justify-content: space-between;">
                         <h3>Identificação da Farmácia</h3>
                         <p>Nome da Farmácia:__________________________</p>
                         <p>CNPJ: ____________________________________ </p>
@@ -335,8 +337,8 @@
                         <p>CRF: _____________________________________ </p>
                     </div>
                 </td>
-                <td style="width: 50%;">
-                    <div class="pharmacy-info">
+                <td style="width: 50%; vertical-align: top;">
+                    <div class="pharmacy-info" style="height: 140px; display: flex; flex-direction: column; justify-content: space-between;">
                         <h3>Comprador</h3>
                         <p>Nome: _________________________________</p>
                         <p>RG: _________________ Emissor: __________</p>
