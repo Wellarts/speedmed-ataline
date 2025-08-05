@@ -33,6 +33,11 @@ class ReceituarioRelationManager extends RelationManager
                             ->required()
                             ->searchable()
                             ->label('Medicamento')
+                            ->columnSpan([
+                                'lg' => 2,
+                                'xl' => 2,
+                                '2xl' => 2,
+                            ])
                             ->createOptionForm([
                                 Grid::make(2)
                                     ->schema([
@@ -57,6 +62,10 @@ class ReceituarioRelationManager extends RelationManager
                                     ]),
                                 
                             ]),
+                        Forms\Components\TextInput::make('dosagem')
+                            ->required()
+                            ->placeholder('Ex: 500mg')
+                            ->label('Dosagem'),
                         Forms\Components\TextInput::make('qtd')
                             ->required()
                             ->placeholder('Ex: 10 compridos')
@@ -78,12 +87,15 @@ class ReceituarioRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('medicamento.nome')
                     ->label('Medicamento'),
+                Tables\Columns\TextColumn::make('dosagem')
+                    ->label('Dosagem'),
                 Tables\Columns\TextColumn::make('medicamento.controle_especial')
                     ->label('Controle Especial')
+                    ->formatStateUsing(fn ($state) => $state ? 'Sim' : 'Não')
+                    ->color(fn ($state) => $state ? 'danger' : 'success')
                     ->alignCenter()
-                    ->badge()
-                    ->formatStateUsing(fn($state) => $state ? 'Sim' : 'Não')
-                    ->color(fn($state) => $state ? 'danger' : 'success'),
+                    ->badge(),
+                    
                 Tables\Columns\TextColumn::make('qtd')
                     ->alignCenter()
                     ->label('Quantidade'),

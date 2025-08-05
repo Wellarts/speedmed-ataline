@@ -66,7 +66,8 @@
         <div class="centered-prescricao">
             @foreach($medicamentoReceituarioComum as $medicamento)
                 <table style="width: 100%">
-                    <tr>                        <td style="text-align: left; width: 30%;"><b>{{ $medicamento->medicamento->nome }}</b></td>
+                    <tr>
+                        <td style="text-align: left; width: 30%;"><b>{{ $medicamento->medicamento->nome }} {{ $medicamento->dosagem }}</b></td>
                         <td style="text-align: center; width: 40%;">_______________________________________________</td>
                         <td style="text-align: left; width: 30%;"><b>{{ $medicamento->qtd }}</b></td>
                     </tr>
