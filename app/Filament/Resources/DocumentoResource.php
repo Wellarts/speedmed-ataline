@@ -21,7 +21,7 @@ class DocumentoResource extends Resource
 
     protected static ?string $navigationGroup = 'Atendimentos';
 
-    protected static string $modalWidth = 'full';
+    protected static ?string $navigationLabel = 'Atestados/Outros';
 
     protected static ?int $navigationSort = 3;
 
