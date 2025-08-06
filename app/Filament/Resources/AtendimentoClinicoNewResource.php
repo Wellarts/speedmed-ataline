@@ -21,6 +21,7 @@ use App\Models\SolicitacaoExame;
 use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Forms\Components\Modal;
+use Illuminate\Support\Carbon;
 
 class AtendimentoClinicoNewResource extends Resource
 {
@@ -208,6 +209,10 @@ class AtendimentoClinicoNewResource extends Resource
                             ->label('Data/Hora do Atendimento')
                             ->default(now()->format('Y-m-d H:i:s'))
                             ->required(),
+
+                        // Define o status como 1 ao criar
+                        Forms\Components\Hidden::make('status')
+                            ->default('1'),
 
                         Forms\Components\Fieldset::make('Queixa Principal e História')
                             ->schema([
@@ -607,7 +612,6 @@ class AtendimentoClinicoNewResource extends Resource
                                         '2' => 'success',
                                         '0' => 'danger',
                                     ])
-                                    ->default('1')
                                     ->required(),
                             ])
                             ->columnSpanFull(),
@@ -692,7 +696,8 @@ class AtendimentoClinicoNewResource extends Resource
                             ->multiple(),
                         Forms\Components\DateTimePicker::make('data_hora_retorno')
                             ->label('Data/Hora do Retorno')
-                            ->required(),
+                            
+                            ->required(false),
                         Forms\Components\ToggleButtons::make('status')
                             ->label('Status do Atendimento')
                             ->inline()
@@ -718,8 +723,10 @@ class AtendimentoClinicoNewResource extends Resource
                         $form->fill([
                             'evolucao' => $record->evolucao,
                             'anexos_resultados' => $record->anexos_resultados,
-                            'data_hora_retorno' => $record->data_hora_retorno,
-                            'resultado_exames' => $record->resultado_exames,                            
+                            'data_hora_retorno' => $record->data_hora_retorno == null
+                                ? Carbon::now()->format('Y-m-d H:i:s')
+                                : $record->data_hora_retorno,
+                            'resultado_exames' => $record->resultado_exames,
                             'status' => $record->status,
                         ]);
                     })
