@@ -546,7 +546,7 @@ class AtendimentoClinicoNewResource extends Resource
                                     ->label('Hipótese Diagnóstica')
                                     ->relationship('hipoteseDiagnostica', 'nome')
                                     ->getOptionLabelFromRecordUsing(fn($record) => $record->nome . ' (CID: ' . $record->cid . ')')
-                                    ->required()
+                                    ->required(false)
                                     ->preload()
                                     ->searchable(['nome', 'cid'])
                                     ->multiple(),
