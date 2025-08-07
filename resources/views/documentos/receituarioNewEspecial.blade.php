@@ -174,7 +174,7 @@
                         <p>Clínica Unimaia</p>
                         <p>Rua Major Capitú, 75 - Centro<br>
                              Lajedo - PE  CEP: 55385000</p>
-                        <p>Telefone: (81) 98800-7298</p>
+                        <p>Telefone: (81) 9.8200-7298</p>
                         
                     </div>
                 </td>
