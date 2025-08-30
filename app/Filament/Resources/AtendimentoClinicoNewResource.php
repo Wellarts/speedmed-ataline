@@ -672,7 +672,7 @@ class AtendimentoClinicoNewResource extends Resource
                                     ->label('Data/Hora do Retorno')
                                     ->default(now()->format('Y-m-d H:i:s'))
                                     ->visible(fn($context) => $context == 'edit')
-                                    ->required(),
+                                    ->required(false),
                                 Forms\Components\ToggleButtons::make('status')
                                     ->label('Status do Atendimento')
                                     ->inline()
