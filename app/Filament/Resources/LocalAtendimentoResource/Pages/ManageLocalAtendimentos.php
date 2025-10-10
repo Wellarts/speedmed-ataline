@@ -12,7 +12,6 @@ class ManageLocalAtendimentos extends ManageRecords
 
     protected static ?string $title = 'Locais de Atendimento';
 
-
     protected function getHeaderActions(): array
     {
         return [
