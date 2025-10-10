@@ -730,6 +730,7 @@ class AtendimentoClinicoNewResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('data_hora_atendimento', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('paciente.nome')
                     ->label('Paciente')
