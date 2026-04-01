@@ -17,12 +17,14 @@ use App\Models\Doenca;
 use App\Models\Estado;
 use Filament\Forms\Set;
 use App\Models\Medicamento;
+use App\Models\Paciente;
 use App\Models\SolicitacaoExame;
 use Filament\Notifications\Notification;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Forms\Components\Modal;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Mockery\Matcher\Not;
 
 class AtendimentoClinicoNewResource extends Resource
 {
@@ -56,14 +58,23 @@ class AtendimentoClinicoNewResource extends Resource
                             ->preload()
                             ->searchable()
                             ->required()
-                            ->live()
+                            ->live(onBlur: true)
                             ->afterStateUpdated(function ($state, Set $set, $get) {
-                                $paciente = $get('paciente_id');
-                                $set('paciente', $paciente);
+                                $paciente = Paciente::find($state);
+
+                                if ($paciente) {
+                                    Notification::make('dados_paciente')
+                                        ->title('Paciente selecionado:')
+                                        ->body('<b>Nome: </b>' . $paciente->nome . '<br><b>Idade: </b>' . ($paciente->data_nascimento ? Carbon::parse($paciente->data_nascimento)->age . ' anos' : 'Data de nascimento não informada') . '<br><b>Gênero: </b>' . ($paciente->genero ? ($paciente->genero == 1 ? 'Masculino' : ($paciente->genero == 2 ? 'Feminino' : 'Outro')) : 'Gênero não informado') . '<br><b>Estado Civil: </b>' . ($paciente->estado_civil ? ($paciente->estado_civil == 1 ? 'Solteiro' : ($paciente->estado_civil == 2 ? 'Casado' : ($paciente->estado_civil == 3 ? 'Divorciado' : ($paciente->estado_civil == 4 ? 'Viúvo' : 'Não informado')))) : 'Estado civil não informado'))
+                                        ->info()
+                                        ->persistent()
+                                        ->send();
+                                }
 
                                 $ultimoAtendimento = AtendimentoClinico::where('paciente_id', $paciente)
                                     ->orderBy('created_at', 'desc')
                                     ->first();
+                                
 
                                 if ($ultimoAtendimento) {
                                     $receituario = optional($ultimoAtendimento->receituario)->isNotEmpty() ? $ultimoAtendimento->receituario->map(function ($item) {
@@ -82,6 +93,7 @@ class AtendimentoClinicoNewResource extends Resource
                                         })->implode(', ')
                                         : 'Nenhum encaminhamento';
                                     // ------------------------------------
+                                                                    
 
                                     Notification::make()
                                         ->title('Último atendimento')
@@ -98,6 +110,7 @@ class AtendimentoClinicoNewResource extends Resource
                                         ->persistent()
                                         ->send();
                                 }
+                                
                             })
                             ->createOptionForm([
                                 Forms\Components\Fieldset::make('Dados Pessoais')

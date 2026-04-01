@@ -18,6 +18,7 @@ class ManageUsers extends ManageRecords
             Actions\CreateAction::make()
             ->label('Novo Usuário')
             ->icon('heroicon-o-plus')
+            ->modalHeading('Criar Novo Usuário')
             ->color('primary'),
         ];
     }
